@@ -1,6 +1,6 @@
 # dsh-outerwilds-theme
 
-一个以《星际拓荒》（Outer Wilds）为主题的 DeepSeek Harness（DSH）外观插件。在篝火和星空下，继续聊天、写代码和整理想法。
+一个以《星际拓荒》（Outer Wilds）为主题的 DeepSeek Harness（DSH）外观插件。
 
 ![预览图](docs/screenshots/preview.png)
 
