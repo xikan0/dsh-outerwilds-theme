@@ -1,0 +1,167 @@
+/* Every rule is scoped to a plugin-owned node or attribute. */
+.cf-stage { position: fixed; z-index: 0; overflow: hidden; pointer-events: none !important; background: #000; contain: layout paint; }
+.cf-composition { position: absolute; inset: 0; filter: brightness(var(--cf-brightness, 1)); }
+.cf-sky { position: absolute; inset: 0; width: 100%; height: 100%; }
+.cf-camp-layer { position: absolute; inset: 0; }
+.cf-art { position: absolute; right: 0; bottom: 0; width: var(--cf-art-width); height: var(--cf-art-height); mask-image: linear-gradient(to right, transparent 49%, #000 61%), linear-gradient(to bottom, transparent 34%, #000 48%); mask-composite: intersect; }
+/* Both clients preserve the accepted sky in full as a fixed background. */
+.cf-stage[data-sky='refined'] .cf-art { mask-image: none; background-size: 100% 100%; background-repeat: no-repeat; }
+.cf-stage[data-sky='refined'] .cf-sky { background-size: 100% 100%; background-repeat: no-repeat; }
+.cf-art-image { display: block; width: 100%; height: 100%; max-width: none; user-select: none; }
+.cf-firelight { position: absolute; left: var(--cf-fire-x); top: var(--cf-fire-y); width: var(--cf-glow-size); height: var(--cf-glow-size); transform: translate(-50%, -65%); background: radial-gradient(ellipse, #ffc25344, #ff991918 35%, transparent 70%); mix-blend-mode: screen; opacity: 0; }
+.cf-living-camp { display: none; position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.cf-stage:not([data-motion='still']) .cf-living-camp { display: block; }
+.cf-flame-dance { transform-box: view-box; transform-origin: 1308px 715px; animation: cf-flame 2.7s ease-in-out infinite; }
+.cf-smoke-sway { transform-box: view-box; transform-origin: 1303px 695px; animation: cf-smoke 14s ease-in-out infinite alternate; }
+.cf-smoke-wisp { transform-box: view-box; transform-origin: 1295px 682px; opacity: 0; animation: cf-wisp 16s linear infinite; }
+.cf-wisp-two { animation-delay: -8s; }
+.cf-spark { opacity: 0; animation: cf-spark 8s linear infinite; }
+.cf-spark-two { animation-delay: -4.7s; animation-duration: 11s; }
+.cf-spark-three { display: none; animation-delay: -2.3s; }
+.cf-stage[data-motion='rich'] .cf-flame-dance { animation-duration: 1.7s; }
+.cf-stage[data-motion='rich'] .cf-smoke-sway { animation-duration: 9s; }
+.cf-stage[data-motion='rich'] .cf-spark-three { display: block; }
+.cf-stage[data-phase='active'] .cf-sparks, .cf-stage[data-phase='active'] .cf-smoke-wisp { visibility: hidden; }
+.cf-stage[data-phase='active'] .cf-camp-layer { opacity: .88; }
+.cf-stage[data-phase='active'] .cf-sky { opacity: .55; }
+/* The accepted Web sky is already subdued; the conversation shade below is
+   sufficient without an additional opacity reduction on the scene. */
+.cf-stage[data-sky='refined'][data-phase='active'] :is(.cf-camp-layer, .cf-sky) { opacity: 1; }
+.cf-stage[data-minimal='true'] .cf-camp-layer { display: none; }
+.cf-stage[data-motion='gentle'] .cf-firelight, .cf-stage[data-motion='rich'] .cf-firelight { animation: cf-glow 4s ease-in-out infinite alternate; }
+.cf-stage[data-paused='true'] * { animation-play-state: paused !important; }
+@keyframes cf-glow { from { opacity: .12; } to { opacity: .65; } }
+@keyframes cf-flame { 0%,100% { transform: scale(1,.98) skewX(0deg); } 19% { transform: scale(.97,1.06) skewX(-2deg); } 37% { transform: scale(1.03,.94) skewX(1.5deg); } 61% { transform: scale(.98,1.03) skewX(-1deg); } 83% { transform: scale(1.02,.97) skewX(1deg); } }
+@keyframes cf-smoke { from { transform: skewX(-.6deg) scaleY(.99); opacity: .88; } to { transform: skewX(.9deg) scaleY(1.02); opacity: .98; } }
+@keyframes cf-wisp { 0%,12% { transform: translate(0,0) scale(.7); opacity: 0; } 28% { opacity: .38; } 70% { opacity: .2; } 100% { transform: translate(-154px,-209px) scale(1.9); opacity: 0; } }
+@keyframes cf-spark { 0%,61%,100% { transform: translate(0,0); opacity: 0; } 65% { opacity: .7; } 85% { transform: translate(-10px,-37px); opacity: .35; } 98% { transform: translate(-19px,-62px); opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .cf-stage * { animation: none !important; } .cf-stage .cf-living-camp { display: none !important; } }
+
+/* 0.2.0-rc.2 host adapter: exact owned markers, no hashed classes. */
+body[data-dsh-campfire] #root { position: relative; z-index: 1; }
+body[data-dsh-campfire] [data-cf-frame], body[data-dsh-campfire] [data-cf-conversation] { background: transparent !important; }
+body[data-dsh-campfire] [data-cf-conversation][data-phase='active'] { background: linear-gradient(90deg, #0002 0%, #0001 62%, #0000 100%) !important; }
+body[data-dsh-campfire] { --dsw-focus-ring-color: #e8a15b; --dsw-radius-panel: 20px; }
+/* Keep DSH's native swimming whale; recolor only its original SVG. */
+body[data-dsh-campfire] [data-slot='conversation.hero.brand.mark'] svg { color: #e8a15b; }
+/* The composer uses info-button tokens, not the primary-button tokens. */
+body[data-dsh-campfire] [data-composer-card] :is(button[aria-label='发送消息'], button[aria-label='排队发送'], button[aria-label='插话发送'], button[aria-label='Send message']) { color: #101c23; }
+body[data-dsh-campfire] :is([data-slot='conversation.input.permission'], [data-slot='conversation.input.model']) button,
+body[data-dsh-campfire] [data-slot='settings.launcher'] button[aria-label='设置'] { color: #e0ba88; }
+body[data-dsh-campfire] :is([data-slot='conversation.input.permission'], [data-slot='conversation.input.model']) button:hover:not(:disabled),
+body[data-dsh-campfire] [data-slot='settings.launcher'] button[aria-label='设置']:hover { color: #f3d3a4; }
+body[data-dsh-campfire] [data-variant='think'] { --dsw-alias-label-tertiary: #b7a184; --dsw-alias-label-secondary: #d1b893; --dsw-alias-label-caption: #baa58b; }
+/* Recolour the host surfaces without touching the campfire artwork. */
+body[data-dsh-campfire] [data-dsh-surface='sidebar'] > div,
+body[data-dsh-campfire] [data-dsh-surface='settings'],
+body[data-dsh-campfire] [data-dsh-plugin='update'][data-dsh-part='panel'][role='dialog'],
+body[data-dsh-campfire] [role='dialog'][aria-label='远程访问'] { background-color: #343130 !important; }
+/* Settings controls use these host aliases; keep them in the same warm-grey family as the panel. */
+body[data-dsh-campfire] [data-dsh-surface='settings'] {
+  --dsw-alias-bg-base: #343130;
+  --dsw-alias-bg-layer-1: #3d3937;
+  --dsw-alias-bg-layer-2: #403c3a;
+  --dsw-alias-bg-layer-3: #45413f;
+  --dsw-alias-bg-module-platform: #403c3a;
+  /* This alias is declared on body as var(--dsw-alias-bg-layer-2), so it captures the
+     host bluish value before reaching the settings scope. Re-declare it here so the
+     var() resolves against the warm layer tokens above (built-in plugin cards,
+     agent preset cards, and model row cards all paint with it). */
+  --dsw-alias-settings-card-fill: var(--dsw-alias-bg-layer-2);
+}
+/* Settings list cards share the button base colour; hover/selected use the lighter tone. */
+body[data-dsh-campfire] [data-dsh-surface='settings'] :is(li[data-plugin-entry], li[data-agent-preset-id], li[class*='_rowCard']) {
+  background-color: var(--dsw-alias-settings-card-fill);
+}
+body[data-dsh-campfire] [data-dsh-surface='settings'] :is(li[data-plugin-entry], li[data-agent-preset-id], li[class*='_rowCard']):hover,
+body[data-dsh-campfire] [data-dsh-surface='settings'] :is(li[data-plugin-entry], li[data-agent-preset-id], li[class*='_rowCard']):is([aria-selected='true'], [aria-current='true'], [data-active='true']) {
+  background-color: #45413f;
+}
+/* DSH and installed settings sections share these outlined/secondary actions. */
+body[data-dsh-campfire] [data-dsh-surface='settings'] :is(button[class*='_outline_'], button[class*='_secondaryButton'], button[class*='_addButton'], button[class*='_creatorButton']) {
+  background-color: #403c3a;
+}
+/* Tabs expose a stable role and selected state even when CSS-module names change. */
+body[data-dsh-campfire] [data-dsh-surface='settings'] button[role='tab'][aria-selected='true'] {
+  background-color: #45413f !important;
+  color: #e8a15b !important;
+  border-color: #e8a15b !important;
+}
+body[data-dsh-campfire] :is([role='menu'], [role='group'])[data-menu-material] { background-color: #343130 !important; }
+body[data-dsh-campfire] [data-dsh-surface='sidebar'] [role='treeitem'][aria-selected='true'],
+body[data-dsh-campfire] [data-dsh-surface='sidebar'] button:is([aria-current='true'], [aria-pressed='true']),
+body[data-dsh-campfire] [data-dsh-surface='settings'] nav button[aria-current='true'] { background-color: #45413f !important; }
+body[data-dsh-campfire][data-cf-density='compact'] [data-cf-conversation] { --cf-content-gap: 12px; }
+body[data-dsh-campfire][data-cf-density='compact'] [data-slot='main.conversation'] [data-slot] { --dsw-radius-xl: 14px; }
+body[data-dsh-campfire][data-cf-density='compact'] [data-slot='main.conversation'] p { margin-block: .55em; }
+body[data-dsh-campfire][data-cf-density='compact'] [data-slot='main.conversation'] li { margin-block: .15em; }
+body[data-dsh-campfire][data-cf-density='compact'] [data-slot='main.conversation'] pre { margin-block: .75em; }
+body[data-dsh-campfire][data-cf-density='compact'] [data-conversation-content] { row-gap: 12px; }
+
+/* Windows Desktop 0.2.0-rc.2. These rules do not depend on skin-center's
+   data-dsh-surface annotations and do not change the Web appearance. */
+body[data-dsh-campfire][data-cf-desktop] [data-cf-center-column]:has([data-cf-conversation]) { background: transparent !important; }
+body[data-dsh-campfire][data-cf-desktop] [data-slot='sidebar'] > div { background-color: #343130 !important; }
+body[data-dsh-campfire][data-cf-desktop] [role='dialog'] {
+  --dsw-alias-bg-base: #343130;
+  background-color: #343130 !important;
+}
+/* Settings cards and actions are also matched through the official slot. */
+body[data-dsh-campfire][data-cf-desktop] [role='dialog']:has([data-slot='settings.section']) {
+  --dsw-alias-settings-card-fill: #403c3a;
+}
+body[data-dsh-campfire][data-cf-desktop] [role='dialog']:has([data-slot='settings.section']) :is(li[data-plugin-entry], li[data-agent-preset-id], li[class*='_rowCard']) {
+  background-color: var(--dsw-alias-settings-card-fill);
+}
+body[data-dsh-campfire][data-cf-desktop] [role='dialog']:has([data-slot='settings.section']) :is(li[data-plugin-entry], li[data-agent-preset-id], li[class*='_rowCard']):hover,
+body[data-dsh-campfire][data-cf-desktop] [role='dialog']:has([data-slot='settings.section']) :is(li[data-plugin-entry], li[data-agent-preset-id], li[class*='_rowCard']):is([aria-selected='true'], [aria-current='true'], [data-active='true']) {
+  background-color: #45413f;
+}
+body[data-dsh-campfire][data-cf-desktop] [role='dialog']:has([data-slot='settings.section']) :is(button[class*='_outline_'], button[class*='_secondaryButton'], button[class*='_addButton'], button[class*='_creatorButton']) {
+  background-color: #403c3a;
+}
+body[data-dsh-campfire][data-cf-desktop] [role='dialog']:has([data-slot='settings.section']) button[role='tab'][aria-selected='true'] {
+  background-color: #45413f !important;
+  color: #e8a15b !important;
+  border-color: #e8a15b !important;
+}
+body[data-dsh-campfire][data-cf-desktop] [data-slot='sidebar'] [role='treeitem'][aria-selected='true'],
+body[data-dsh-campfire][data-cf-desktop] [data-slot='sidebar'] button:is([aria-current='true'], [aria-pressed='true']),
+body[data-dsh-campfire][data-cf-desktop] [role='dialog']:has([data-slot='settings.section']) nav button[aria-current='true'] {
+  background-color: #45413f !important;
+}
+/* MenuSurface paints its own material child; keep its parent transparent. */
+body[data-dsh-campfire][data-cf-desktop] :is([role='menu'], [role='group'])[data-menu-material] { background-color: transparent !important; }
+body[data-dsh-campfire][data-cf-desktop] :is([role='menu'], [role='listbox']):not([data-menu-material]) { background-color: var(--dsw-menu-surface-fill) !important; }
+/* HoverCard sets this variable locally. Its official inline preview timing
+   property identifies the actual portal node without matching a hashed class. */
+body[data-dsh-campfire][data-cf-desktop] [style*='--dsh-hover-preview-fade'] { --dsw-hovercard-bg: #343130; }
+body[data-dsh-campfire][data-cf-desktop] :is(select, option, optgroup) {
+  color-scheme: dark;
+  background-color: #403c3a;
+  color: var(--dsw-alias-label-primary);
+}
+
+.cf-settings { --dsw-alias-interactive-bg-hover: #849c931a; --dsw-alias-interactive-bg-active: #849c932e; color: var(--dsw-alias-label-primary, #e7e9ec); font-family: inherit; max-width: 740px; padding-bottom: 24px; }
+.cf-settings h2 { margin: 0 0 6px; font-size: 22px; font-weight: 600; letter-spacing: .02em; }
+.cf-settings p { color: var(--dsw-alias-label-secondary, #a8b1b5); font-size: 13px; line-height: 1.7; margin: 0 0 20px; }
+.cf-settings .cf-mini { position: relative; height: 160px; overflow: hidden; border: 1px solid var(--dsw-alias-border-l2, #34424b); border-radius: 14px; background: #000; margin-bottom: 20px; }
+.cf-mini img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: right bottom; }
+.cf-row { display: flex; align-items: center; justify-content: space-between; gap: 20px; border-bottom: 1px solid var(--dsw-alias-border-l1, #34424b); padding: 18px 0; }
+.cf-row label, .cf-row legend { font-size: 14px; font-weight: 500; }
+.cf-row small { display: block; font-size: 12px; color: var(--dsw-alias-label-secondary, #a8b1b5); margin-top: 5px; }
+.cf-row fieldset { border: 0; padding: 0; margin: 0; width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.cf-row legend { float: left; }
+.cf-segments { display: flex; flex-wrap: wrap; gap: 4px; }
+.cf-settings button { font: inherit; font-size: 13px; cursor: pointer; padding: 8px 13px; border-radius: 8px; border: 1px solid var(--dsw-alias-border-l2, #34424b); color: inherit; background: transparent; }
+.cf-settings button:hover:not(:disabled) { background: var(--dsw-alias-interactive-bg-hover, #24363e); }
+.cf-settings button[aria-pressed='true'], .cf-settings .cf-primary { background: #e8a15b; color: #161a1c; border-color: #e8a15b; }
+.cf-settings button:focus-visible, .cf-settings input:focus-visible { outline: 2px solid #e8a15b; outline-offset: 3px; }
+.cf-settings button:disabled, .cf-settings input:disabled { opacity: .5; cursor: not-allowed; }
+.cf-range { display: flex; align-items: center; gap: 12px; min-width: min(240px, 48%); }
+.cf-range input { min-width: 0; width: 100%; accent-color: #e8a15b; }
+.cf-range output { font-size: 12px; min-width: 36px; text-align: right; font-variant-numeric: tabular-nums; }
+.cf-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 22px; }
+.cf-status { min-height: 22px; color: var(--dsw-alias-label-secondary, #a8b1b5); font-size: 12px; line-height: 1.6; margin-top: 12px; }
+.cf-status[data-error='true'] { color: var(--dsw-alias-state-error-primary, #f29a90); }
+@media (max-width: 600px) { .cf-row, .cf-row fieldset { flex-direction: column; align-items: stretch; gap: 12px; } .cf-range { width: 100%; } .cf-row legend { float: none; margin-bottom: 12px; } }
