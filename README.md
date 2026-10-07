@@ -1,5 +1,6 @@
-# 篝火与星空
-一个给 DeepSeek Harness（DSH）使用的主题，《星际拓荒》作为主题的聊天界面。
+# dsh-outerwilds-theme
+
+一个以《星际拓荒》（Outer Wilds）为主题的 DeepSeek Harness（DSH）外观插件。在篝火和星空下，继续聊天、写代码和整理想法。
 
 ![预览图](docs/screenshots/preview.png)
 
@@ -8,18 +9,18 @@
 - 可以调整背景亮度、星星数量、面板透明度、字号和布局密度。
 - 支持 DSH Web 和 Windows Desktop。
 
-目前初版是 **0.2.11**，在 **DSH 0.2.0-rc.2** 的 Web 与 Windows Desktop 上完成了个人使用验收。其他系统和 DSH 版本还没有验证。
+目前初版是 **0.1.0**，主题效果已在 **DSH 0.2.0-rc.2** 的 Web 与 Windows Desktop 上完成个人使用验收。其他系统和 DSH 版本还没有验证。
 
 ## 安装和启用
 
-从 [Releases](https://github.com/xikan0/dsh-theme-campfire/releases) 下载 `dsh-theme-campfire-0.2.11.tgz`。
+从 [Releases](https://github.com/xikan0/dsh-outerwilds-theme/releases/tag/0.1.0) 下载 `dsh-outerwilds-theme-0.1.0.tgz`。
 
 ### Web
 
 先安装 DSH，并确保终端能运行 `dsh`。在安装包所在目录运行：
 
 ```powershell
-dsh plugin --profile web add ./dsh-theme-campfire-0.2.11.tgz
+dsh plugin --profile web add ./dsh-outerwilds-theme-0.1.0.tgz
 dsh web
 ```
 
@@ -27,21 +28,21 @@ dsh web
 
 ### Harness Desktop
 
-如果你的版本提供插件管理入口，在侧栏打开 **插件 → 添加插件**，填入下载的安装包的完整路径，例如 `C:/Downloads/dsh-theme-campfire-0.2.11.tgz`。安装并启用插件后，完全退出应用（包括托盘）并重新打开。
+如果你的版本提供插件管理入口，在侧栏打开 **插件 → 添加插件**，填入下载的安装包的完整路径，例如 `C:/Downloads/dsh-outerwilds-theme-0.1.0.tgz`。安装并启用插件后，完全退出应用（包括托盘）并重新打开。
 
 桌面版和 Web 的插件安装位置不同。命令安装请参考 [DSH 官方桌面端说明](https://github.com/deepseek-ai/deepseek-harness/blob/master/apps/desktop/README.zh.md#bundled-command-runtime)，使用桌面版随附的命令；旧版本可能不支持该方式，不要用 npm 版 `dsh` 修改桌面端的插件目录。
 
 如果使用桌面版随附的 `dsh` 命令，先完全退出 Desktop，再在安装包所在目录运行：
 
 ```powershell
-dsh plugin --profile desktop add ./dsh-theme-campfire-0.2.11.tgz
+dsh plugin --profile desktop add ./dsh-outerwilds-theme-0.1.0.tgz
 ```
 
 安装后重新打开 Desktop。
 
 ### 启用主题
 
-打开 **设置 → 篝火与星空 → 启用深色主题**。首次安装默认关闭，手动启用后才会显示。
+打开 **设置 → dsh-outerwilds-theme → 启用深色主题**。首次安装默认关闭，手动启用后才会显示。
 
 建议关闭其他完整主题、壁纸和自定义配色，以免相互覆盖。切换到浅色时，篝火场景会自动停用。
 
@@ -63,7 +64,7 @@ dsh plugin --profile desktop add ./dsh-theme-campfire-0.2.11.tgz
 Web 端先关闭主题，再运行：
 
 ```powershell
-dsh plugin --profile web remove dsh-theme-campfire
+dsh plugin --profile web remove dsh-outerwilds-theme
 ```
 
 重启 Web 后生效。Desktop 请通过桌面应用自己的插件管理方式移除，再完全退出并重开。

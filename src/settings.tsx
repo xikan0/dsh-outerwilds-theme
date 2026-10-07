@@ -1,6 +1,7 @@
 import { useSyncExternalStore } from 'react';
 import type { AppearanceController } from './controller';
 import type { Preferences } from './config';
+import { PACKAGE_ID } from './config';
 import campfireArt from './assets/campfire-web-stars.png';
 
 export function SettingsPanel({ controller }: { controller: AppearanceController }) {
@@ -19,8 +20,8 @@ export function SettingsPanel({ controller }: { controller: AppearanceController
   else if (!form.writable) status = '当前连接不能保存主题设置。请从本机 localhost 地址打开。';
   else if (prefs.enabled && !state.dark) status = '当前为浅色外观，主题暂时停用。切回深色后会自动恢复。';
   else if (prefs.enabled && !state.adapted) status = '配色已启用；当前页面没有可适配的聊天区域，场景暂未显示。';
-  return <section className="cf-settings" aria-label="篝火与星空设置">
-    <h2>篝火与星空</h2><p>在星空下，整理今天的探索。场景会随着聊天区的尺寸调整。</p>
+  return <section className="cf-settings" aria-label={`${PACKAGE_ID} 设置`}>
+    <h2>{PACKAGE_ID}</h2><p>在星空下，整理今天的探索。场景会随着聊天区的尺寸调整。</p>
     <div className="cf-mini" aria-hidden="true"><img src={campfireArt} alt="" style={{ filter: `brightness(${1 + (prefs.brightness - 35) / 65})` }}/></div>
     <div className="cf-row"><label>主题<small>{prefs.enabled && state.dark ? '已启用，随窗口调整营地场景' : '适用于 DSH 深色外观'}</small></label><button disabled={disabled || !!state.saving} className={prefs.enabled && state.dark ? '' : 'cf-primary'} onClick={() => void (prefs.enabled && state.dark ? controller.write('enabled', false) : controller.enable())}>{prefs.enabled && state.dark ? '关闭主题' : '启用深色主题'}</button></div>
     {range('brightness', '背景亮度', 15, 65)}

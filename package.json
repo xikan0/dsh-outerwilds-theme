@@ -1,10 +1,10 @@
 {
-  "name": "dsh-theme-campfire",
-  "version": "0.2.11",
-  "description": "篝火与星空：DSH Web 与 Windows Desktop 的营地主题",
+  "name": "dsh-outerwilds-theme",
+  "version": "0.1.0",
+  "description": "以《星际拓荒》为主题的 DSH Web 与 Windows Desktop 外观插件",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/xikan0/dsh-theme-campfire.git"
+    "url": "git+https://github.com/xikan0/dsh-outerwilds-theme.git"
   },
   "type": "module",
   "main": "lib/index.js",

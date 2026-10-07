@@ -1,4 +1,4 @@
-# 素材参考
+# dsh-outerwilds-theme 素材参考
 
 营地底图参考了用户提供的 [Pinterest 图片](https://www.pinterest.com/pin/983473637352095224/)，并调整了星空等画面细节。
 

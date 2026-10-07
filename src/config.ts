@@ -1,5 +1,5 @@
-export const ENTRY_ID = 'ui-campfire-theme';
-export const PACKAGE_ID = 'dsh-theme-campfire';
+export const ENTRY_ID = 'ui-outerwilds-theme';
+export const PACKAGE_ID = 'dsh-outerwilds-theme';
 export type Motion = 'still' | 'gentle' | 'rich';
 export type Stars = 'few' | 'standard' | 'many';
 export interface Preferences {
