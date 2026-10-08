@@ -1,4 +1,46 @@
-<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>dsh-outerwilds-theme · 场景预览</title><style>
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>星际拓荒 · 场景预览</title><style>
 *{box-sizing:border-box}html,body,#root{height:100%;margin:0}body{font:14px/1.6 'Segoe UI','Microsoft YaHei',sans-serif;background:#071017;color:#eee8d9}button,textarea{font:inherit}button{cursor:pointer}[data-slot]{display:contents}.preview-frame{height:100%;display:flex;background:#071017}.preview-sidebar{width:240px;flex:none;background:var(--dsw-specific-sidebar-fill,#343130);padding:28px 18px;display:flex;flex-direction:column;gap:12px;border-right:1px solid #263c40}.preview-brand{font-size:21px;color:#e8a15b;display:flex;gap:12px;margin-bottom:20px}.preview-brand span{color:#e8e2d1;font-weight:600}.preview-sidebar button{border:0;text-align:left;padding:11px 14px;border-radius:8px;color:#bdc8c4;background:transparent}.preview-sidebar .preview-new{border:1px solid #e8a15b4d;color:#e8b986;margin-bottom:12px}.preview-session:hover{background:#21332f}.preview-recent{font-size:12px;color:#839696;padding:6px 14px}.preview-settings{margin-top:auto}.preview-sidebar-hidden{display:none}.preview-conversation{min-width:0;position:relative;flex:1;height:100%;background:#071017;display:flex;flex-direction:column}.preview-header{height:64px;display:flex;align-items:center;gap:14px;padding:12px 28px;color:#a5b6b6}.preview-header button{border:0;color:#a5b6b6;background:transparent;font-size:18px}.preview-header small{margin-left:auto;color:#617c80;font-size:11px}.preview-hero{margin:clamp(30px,12vh,130px) auto 0;text-align:center;position:relative;z-index:1}.preview-hero-symbol{font-size:32px;color:#e8a15b}.preview-hero h1{font-size:26px;font-weight:500;color:#eee8d9;letter-spacing:.04em}.preview-hero p{color:#91a7a7;font-size:13px}.preview-composer{display:flex;align-items:end;position:absolute;bottom:28px;left:50%;transform:translateX(-50%);width:min(720px,calc(100% - 56px));min-height:84px;padding:14px 16px;border:1px solid #80988e3d;border-radius:18px;background:var(--dsw-specific-input-major,#343130f5);box-shadow:0 8px 35px #0003}.preview-composer textarea{resize:none;flex:1;min-width:0;border:0;outline:0;background:none;color:#eee8d9;height:48px;font-size:var(--dsh-content-font-size,14px)}.preview-composer textarea::placeholder{color:#8a9fa1}.preview-composer button{width:34px;height:34px;border:0;border-radius:50%;background:#e8a15b;color:#11191e;font-size:23px}.preview-transcript{width:min(720px,calc(100% - 56px));margin:40px auto;position:relative;z-index:1;font-size:var(--dsh-content-font-size,14px)}.preview-user{margin-left:auto;width:fit-content;background:#1d3035;padding:14px 20px;border-radius:14px}.preview-reply{margin-top:28px;line-height:1.9}.preview-reply pre{background:#0b161e;border:1px solid #78928726;padding:18px 22px;border-radius:12px;color:#b5cccd;overflow:auto;font:13px/1.8 Consolas,monospace}.preview-dialog-backdrop{position:fixed;inset:0;z-index:30;background:#0008;display:flex;align-items:center;justify-content:center;padding:24px}.preview-dialog{display:flex;width:min(960px,100%);max-height:90vh;border:1px solid #405653;border-radius:20px;background:#343130;overflow:hidden;box-shadow:0 24px 80px #0007}.preview-dialog nav{display:flex;flex-direction:column;gap:20px;width:190px;padding:28px 20px;border-right:1px solid #40565340}.preview-dialog nav button{border:0;padding:10px;background:#45413f;color:#e8c8a6;border-radius:8px;text-align:left}.preview-settings-content{position:relative;flex:1;min-width:0;overflow:auto;padding:30px 36px}.preview-close{position:absolute;right:14px;top:12px;background:none;border:0;color:#a5b6b6;font-size:23px}@media(max-width:700px){.preview-sidebar{width:190px}.preview-header{padding:12px 18px}.preview-hero h1{font-size:21px}.preview-composer{bottom:18px;width:calc(100% - 28px)}.preview-dialog nav{display:none}.preview-settings-content{padding:28px 20px}}@media(max-width:480px){.preview-sidebar{display:none}.preview-dialog-backdrop{padding:8px}}
+/* A small host-shaped fixture for checking the shared sidebar styles. */
+.preview-sidebar-column { flex: none; height: 100%; }
+.preview-sidebar { width: 264px; height: 100%; padding: 6px 12px; gap: 0; border: 0; }
+.preview-sidebar button { font: inherit; color: inherit; background: transparent; border: 0; margin: 0; }
+.preview-brand { display: flex; align-items: center; gap: 8px; flex: none; height: 60px; padding-left: 5px; margin: 0 0 4px; }
+.preview-wordmark { flex: 1; font: 600 23px/1 'Bahnschrift', sans-serif; letter-spacing: -.05em; white-space: nowrap; }
+.preview-wordmark small { display: inline-block; font: 700 9px/1.2 'Bahnschrift', sans-serif; padding: 2px 3px; letter-spacing: .015em; color: #171b19; background: #d9cbb9; border-radius: 1px; vertical-align: middle; }
+.preview-brand button, .preview-workspace-heading button { width: 28px; height: 28px; padding: 6px; display: inline-flex; align-items: center; justify-content: center; flex: none; color: #a69e93; border-radius: 3px; }
+.preview-brand button:hover, .preview-workspace-heading button:hover { background: #ed945412; color: #f6d9bf; }
+.preview-sidebar .preview-new { display: flex; align-items: center; justify-content: center; gap: 7px; height: 38px; flex: none; margin: 0 2px 12px; padding: 8px 12px; }
+.preview-sidebar nav { display: flex; flex-direction: column; gap: 4px; margin: 0; }
+.preview-sidebar nav button { min-width: 0; min-height: 36px; display: flex; align-items: center; gap: 9px; padding: 7px 8px; margin: 0 2px; text-align: left; line-height: 22px; }
+.preview-sidebar nav button > span:first-child { display: inline-flex; flex: none; }
+.preview-sidebar nav button > span:last-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.preview-workspace-area { min-height: 0; flex: 1; overflow: auto; }
+.preview-workspace-heading { display: flex; align-items: center; justify-content: space-between; min-height: 32px; padding: 0 4px 6px; }
+.preview-project { min-height: 34px; display: flex; align-items: center; gap: 7px; padding: 5px; cursor: pointer; font-size: 13px; }
+.preview-project svg { flex: none; color: #a69e93; }
+.preview-project > span:first-of-type { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.preview-caret { margin-left: auto; color: #a69e93; }
+.preview-session { display: flex; align-items: center; min-height: 34px; padding: 5px 12px 5px 28px; cursor: pointer; font-size: 13px; color: #bdb4a8; }
+.preview-session span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.preview-search { width: calc(100% - 8px); margin: 0 4px 8px; padding: 5px 8px; border: 1px solid #ed945447; border-radius: 3px; background: #0002; color: #f6d9bf; }
+.preview-footer { flex: none; padding-bottom: 6px; }
+.preview-sidebar .preview-settings { display: flex; align-items: center; gap: 9px; width: 100%; min-height: 36px; padding: 7px 8px; text-align: left; }
+.preview-rail { width: 56px; padding-inline: 8px; }
+.preview-rail .preview-brand { justify-content: center; padding: 0; }
+.preview-rail .preview-wordmark { display: none; }
+.preview-rail nav button, .preview-rail .preview-settings { justify-content: center; padding: 8px; margin: 0; }
+.preview-rail .preview-new { padding: 0; }
+.preview-rail .preview-workspace-heading { padding: 0; justify-content: center; }
+.preview-hero { position: absolute; top: 37%; left: 0; width: 100%; margin: 0; }
+.preview-hero h1 { margin: 5px 0; }
+.preview-hero p { margin: 8px 0; }
+[data-phase='hero'] .preview-composer { top: calc(37% + 135px); bottom: auto; }
+.preview-header small { color: #83918a; }
+.preview-sidebar :is(button, input, [tabindex]):focus-visible { outline: 1px solid #f6d9bf; outline-offset: -2px; }
+@media(max-width:700px) { .preview-sidebar:not(.preview-rail) { width: 232px; } }
+@media(max-width:480px) {
+  .preview-sidebar { display: flex; }
+  .preview-sidebar-column:has(.preview-sidebar:not(.preview-rail)) { position: absolute; inset: 0 auto 0 0; z-index: 10; box-shadow: 12px 0 32px #0007; }
+}
 </style></head><body><div id="root"></div><script type="module" src="/app.js"></script></body></html>
 

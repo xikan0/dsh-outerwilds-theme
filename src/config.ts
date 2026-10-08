@@ -1,5 +1,6 @@
 export const ENTRY_ID = 'ui-outerwilds-theme';
 export const PACKAGE_ID = 'dsh-outerwilds-theme';
+export const DISPLAY_NAME = '星际拓荒';
 export type Motion = 'still' | 'gentle' | 'rich';
 export type Stars = 'few' | 'standard' | 'many';
 export interface Preferences {

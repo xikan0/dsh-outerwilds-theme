@@ -1,6 +1,8 @@
 License scope: The MIT License below applies to this project's software code
 and original documentation. Background artwork, artwork previews, and embedded
 artwork are excluded. See ARTWORK.md for their source and usage information.
+Bundled fonts retain their own SIL Open Font License, Version 1.1. See FONTS.md
+and the notices in licenses/; the MIT License does not apply to those fonts.
 
 MIT License
 
