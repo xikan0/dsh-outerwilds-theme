@@ -1,4 +1,17 @@
 /* Every rule is scoped to a plugin-owned node or attribute. */
+/* Jost supplies Latin letters and numbers; missing CJK glyphs fall through to
+   the official Simplified Chinese Source Han Sans face. Keep native sizes,
+   weights and line heights, including those set by font shorthands. */
+body[data-dsh-campfire] {
+  --cf-font-family: 'DSH Outer Wilds Jost', 'DSH Outer Wilds Source Han Sans CN', sans-serif;
+  --dsw-font-family: var(--cf-font-family) !important;
+  --dsw-font-family-brand: var(--cf-font-family) !important;
+  --ds-font-family-code: var(--cf-font-family) !important;
+  font-family: var(--cf-font-family) !important;
+}
+body[data-dsh-campfire] :where(*):not(:where(svg, svg *, math, math *, .katex, .katex *, .xterm, .xterm *)) {
+  font-family: var(--cf-font-family) !important;
+}
 .cf-stage { position: fixed; z-index: 0; overflow: hidden; pointer-events: none !important; background: #000; contain: layout paint; }
 .cf-composition { position: absolute; inset: 0; filter: brightness(var(--cf-brightness, 1)); }
 .cf-sky { position: absolute; inset: 0; width: 100%; height: 100%; }
@@ -42,6 +55,72 @@ body[data-dsh-campfire] #root { position: relative; z-index: 1; }
 body[data-dsh-campfire] [data-cf-frame], body[data-dsh-campfire] [data-cf-conversation] { background: transparent !important; }
 body[data-dsh-campfire] [data-cf-conversation][data-phase='active'] { background: linear-gradient(90deg, #0002 0%, #0001 62%, #0000 100%) !important; }
 body[data-dsh-campfire] { --dsw-focus-ring-color: #e8a15b; --dsw-radius-panel: 20px; }
+/* Trajectory and Context keep their own reading surfaces over the shared sky.
+   Match the official conversation slot and Context's named roots, not hashes. */
+body[data-dsh-campfire] :is([data-slot='conversation.view']:has(> [data-conversation-composer-overlay]), [data-slot='conversation.view']:has(.lc-root), [data-slot='main'] .lc-ov-page) {
+  --dsw-alias-bg-base: #343130;
+  --dsw-alias-bg-layer-1: #343130eb;
+  --dsw-alias-bg-layer-2: #403c3af0;
+  --dsw-alias-bg-layer-3: #45413ff5;
+  --dsw-alias-bg-layer-4: #4d4946;
+  --dsw-alias-bg-overlay: #45413f;
+  --dsw-alias-bg-module-platform: #403c3a;
+  --dsw-alias-label-primary: #eee8d9;
+  --dsw-alias-label-primary-bluish: #e2dacd;
+  --dsw-alias-label-primary-dimmed: #d9cbb9;
+  --dsw-alias-label-dimmed: #a69e93;
+  --dsw-alias-label-secondary: #bcb3a7;
+  --dsw-alias-label-tertiary: #a69e93;
+  --dsw-alias-label-caption: #bcb3a7;
+  --dsw-alias-border-l1: #a9a4a01a;
+  --dsw-alias-border-l2: #a9a4a02e;
+  --dsw-alias-border-l3: #a9a4a03d;
+  --dsw-alias-border-l4: #a9a4a052;
+  --dsw-alias-interactive-bg-hover: #403c3ae8;
+  --dsw-alias-interactive-bg-active: #45413ff0;
+  --dsw-specific-sidebar-fill: #343130;
+}
+body[data-dsh-campfire] [data-slot='conversation.view'] > [data-conversation-composer-overlay],
+body[data-dsh-campfire] [data-slot='conversation.view'] > [data-conversation-composer-overlay] :is([class*='_split'], table),
+body[data-dsh-campfire] [data-slot='conversation.view'] .lc-root {
+  background: transparent !important;
+}
+/* Sticky controls stay solid so scrolling records do not show through them. */
+body[data-dsh-campfire] [data-slot='conversation.view'] > [data-conversation-composer-overlay] > div:first-child {
+  background: #343130 !important;
+}
+/* A light reading shade preserves the stars without leaving table text bare. */
+body[data-dsh-campfire] [data-slot='conversation.view'] > [data-conversation-composer-overlay] [class*='_tablePane'] {
+  background: #16141380;
+}
+/* DSH keeps a shared composer as an overlay on Trajectory. Hide only its normal
+   input surface; pending approvals, questions and plan reviews must stay usable. */
+body[data-dsh-campfire] [data-conversation-scroll]:has([data-slot='conversation.view'] > [data-conversation-composer-overlay]) > [data-composer-seat]:not(:has([data-approval-key], [data-question-key], [data-plan-review-key])) {
+  display: none;
+}
+/* Reclaim the overlay clearance only while there is no pending interaction. */
+body[data-dsh-campfire] [data-conversation-scroll]:has([data-slot='conversation.view'] > [data-conversation-composer-overlay]):not(:has(> [data-composer-seat] :is([data-approval-key], [data-question-key], [data-plan-review-key]))) [data-slot='conversation.view'] > [data-conversation-composer-overlay] > [class*='_ledger'] {
+  --dsh-trajectory-bottom-clearance: 16px;
+}
+/* Context Insights is a separate main panel, outside the conversation scene.
+   Reuse the accepted bitmap as one static underlay, with no extra scene nodes. */
+body[data-dsh-campfire] [data-slot='main'] .lc-ov-page {
+  position: relative;
+  isolation: isolate;
+  background: transparent !important;
+}
+body[data-dsh-campfire] [data-slot='main'] .lc-ov-page::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-color: #000;
+  background-image: linear-gradient(90deg, #0002, #0001 62%, #0000), var(--cf-view-art);
+  background-position: center, right bottom;
+  background-size: cover;
+  background-repeat: no-repeat;
+}
 /* Keep DSH's native swimming whale; recolor only its original SVG. */
 body[data-dsh-campfire] [data-slot='conversation.hero.brand.mark'] svg { color: #e8a15b; }
 /* The composer uses info-button tokens, not the primary-button tokens. */
@@ -51,46 +130,98 @@ body[data-dsh-campfire] [data-slot='settings.launcher'] button[aria-label='设�
 body[data-dsh-campfire] :is([data-slot='conversation.input.permission'], [data-slot='conversation.input.model']) button:hover:not(:disabled),
 body[data-dsh-campfire] [data-slot='settings.launcher'] button[aria-label='设置']:hover { color: #f3d3a4; }
 body[data-dsh-campfire] [data-variant='think'] { --dsw-alias-label-tertiary: #b7a184; --dsw-alias-label-secondary: #d1b893; --dsw-alias-label-caption: #baa58b; }
-/* Recolour the host surfaces without touching the campfire artwork. */
-body[data-dsh-campfire] [data-dsh-surface='sidebar'] > div,
-body[data-dsh-campfire] [data-dsh-surface='settings'],
-body[data-dsh-campfire] [data-dsh-plugin='update'][data-dsh-part='panel'][role='dialog'],
-body[data-dsh-campfire] [role='dialog'][aria-label='远程访问'] { background-color: #343130 !important; }
-/* Settings controls use these host aliases; keep them in the same warm-grey family as the panel. */
-body[data-dsh-campfire] [data-dsh-surface='settings'] {
+/* Warm metadata colours also reach icons through the host's currentColor.
+   Slot/data markers keep these accents separate from message/code content. */
+body[data-dsh-campfire] [data-slot='conversation.session.header.actions'] {
+  --dsw-alias-label-tertiary: #d9bb98;
+  --dsw-alias-label-secondary: #e2c8a6;
+  --dsw-alias-label-caption: #c5b7a5;
+}
+body[data-dsh-campfire] [data-team-action] > button:is(:hover, :focus-visible, [aria-expanded='true']) {
+  color: #e8a15b;
+}
+body[data-dsh-campfire] [data-code-block-banner] {
+  --dsw-alias-label-tertiary: #d9bb98;
+  --dsw-alias-label-secondary: #bcb3a7;
+  color: #d9bb98;
+}
+body[data-dsh-campfire] [data-code-block-banner] button:is(:hover, :focus-visible):not(:disabled) {
+  color: #e8a15b;
+}
+body[data-dsh-campfire] [data-turn-tail] {
+  --dsw-alias-label-tertiary: #bcb3a7;
+  --dsw-alias-label-secondary: #d9cbb9;
+}
+body[data-dsh-campfire] [data-turn-tail] button:is(:hover, :focus-visible):not(:disabled):not([data-unavailable]),
+body[data-dsh-campfire] [data-turn-tail] button:is([data-active], [aria-pressed='true']):not(:disabled):not([data-unavailable]) {
+  color: #e8a15b;
+}
+body[data-dsh-campfire] [data-turn-tail] button:is(:disabled, [data-unavailable]) {
+  color: #958c7e;
+}
+body[data-dsh-campfire] [data-composer-stats] {
+  --dsw-alias-label-tertiary: #bcb3a7;
+  --dsw-alias-label-secondary: #d9cbb9;
+  --dsw-alias-separator-primary: #958c7e;
+  color: #bcb3a7;
+}
+body[data-dsh-campfire] [data-composer-stats] button:is(:hover, :focus-visible, [aria-expanded='true']):not(:disabled) {
+  color: #e8a15b;
+}
+body[data-dsh-campfire] :is([data-turn-usage-details], [data-session-stats-details], [data-session-stats-usage]) {
+  --dsw-alias-label-tertiary: #a69e93;
+  --dsw-alias-label-secondary: #d9cbb9;
+}
+/* Web and Desktop dialogs share the accepted warm-grey surfaces. The official
+   dialog role also covers model editors and shortcut dialogs outside settings. */
+body[data-dsh-campfire] :is([role='dialog'], [data-dsh-surface='settings']) {
   --dsw-alias-bg-base: #343130;
   --dsw-alias-bg-layer-1: #3d3937;
   --dsw-alias-bg-layer-2: #403c3a;
   --dsw-alias-bg-layer-3: #45413f;
+  --dsw-alias-bg-layer-4: #4d4946;
+  --dsw-alias-bg-overlay: #45413f;
   --dsw-alias-bg-module-platform: #403c3a;
-  /* This alias is declared on body as var(--dsw-alias-bg-layer-2), so it captures the
-     host bluish value before reaching the settings scope. Re-declare it here so the
-     var() resolves against the warm layer tokens above (built-in plugin cards,
-     agent preset cards, and model row cards all paint with it). */
+  --dsw-alias-label-primary: #eee8d9;
+  --dsw-alias-label-primary-bluish: #e2dacd;
+  --dsw-alias-label-primary-dimmed: #d9cbb9;
+  --dsw-alias-label-dimmed: #a69e93;
+  --dsw-alias-label-secondary: #bcb3a7;
+  --dsw-alias-label-tertiary: #a69e93;
+  --dsw-alias-label-caption: #bcb3a7;
+  --dsw-alias-border-l1: #a9a4a01a;
+  --dsw-alias-border-l2: #a9a4a02e;
+  --dsw-alias-border-l3: #a9a4a03d;
+  --dsw-alias-border-l4: #a9a4a052;
+  --dsw-specific-sidebar-nav-item-active: #45413f;
+  --dsw-specific-sidebar-nav-item-hover: #403c3a;
+  /* Rebind derived aliases here: body already resolved them against its palette. */
   --dsw-alias-settings-card-fill: var(--dsw-alias-bg-layer-2);
+  --dsw-alias-settings-card-stroke: var(--dsw-alias-border-l4);
+  background-color: #343130 !important;
 }
 /* Settings list cards share the button base colour; hover/selected use the lighter tone. */
-body[data-dsh-campfire] [data-dsh-surface='settings'] :is(li[data-plugin-entry], li[data-agent-preset-id], li[class*='_rowCard']) {
+body[data-dsh-campfire] :is([data-shortcut-modal='settings'], [data-dsh-surface='settings'], [role='dialog']:has([data-slot='settings.section'])) :is(li[data-plugin-entry], li[data-agent-preset-id], li[class*='_rowCard']) {
   background-color: var(--dsw-alias-settings-card-fill);
 }
-body[data-dsh-campfire] [data-dsh-surface='settings'] :is(li[data-plugin-entry], li[data-agent-preset-id], li[class*='_rowCard']):hover,
-body[data-dsh-campfire] [data-dsh-surface='settings'] :is(li[data-plugin-entry], li[data-agent-preset-id], li[class*='_rowCard']):is([aria-selected='true'], [aria-current='true'], [data-active='true']) {
+body[data-dsh-campfire] :is([data-shortcut-modal='settings'], [data-dsh-surface='settings'], [role='dialog']:has([data-slot='settings.section'])) :is(li[data-plugin-entry], li[data-agent-preset-id], li[class*='_rowCard']):hover,
+body[data-dsh-campfire] :is([data-shortcut-modal='settings'], [data-dsh-surface='settings'], [role='dialog']:has([data-slot='settings.section'])) :is(li[data-plugin-entry], li[data-agent-preset-id], li[class*='_rowCard']):is([aria-selected='true'], [aria-current='true'], [data-active='true']) {
   background-color: #45413f;
 }
 /* DSH and installed settings sections share these outlined/secondary actions. */
-body[data-dsh-campfire] [data-dsh-surface='settings'] :is(button[class*='_outline_'], button[class*='_secondaryButton'], button[class*='_addButton'], button[class*='_creatorButton']) {
+body[data-dsh-campfire] :is([data-shortcut-modal='settings'], [data-dsh-surface='settings'], [role='dialog']:has([data-slot='settings.section'])) :is(button[class*='_outline_'], button[class*='_secondaryButton'], button[class*='_addButton'], button[class*='_creatorButton']) {
   background-color: #403c3a;
 }
 /* Tabs expose a stable role and selected state even when CSS-module names change. */
-body[data-dsh-campfire] [data-dsh-surface='settings'] button[role='tab'][aria-selected='true'] {
+body[data-dsh-campfire] :is([data-shortcut-modal='settings'], [data-dsh-surface='settings'], [role='dialog']:has([data-slot='settings.section'])) button[role='tab'][aria-selected='true'] {
   background-color: #45413f !important;
   color: #e8a15b !important;
   border-color: #e8a15b !important;
 }
-body[data-dsh-campfire] :is([role='menu'], [role='group'])[data-menu-material] { background-color: #343130 !important; }
-body[data-dsh-campfire] [data-dsh-surface='sidebar'] [role='treeitem'][aria-selected='true'],
-body[data-dsh-campfire] [data-dsh-surface='sidebar'] button:is([aria-current='true'], [aria-pressed='true']),
-body[data-dsh-campfire] [data-dsh-surface='settings'] nav button[aria-current='true'] { background-color: #45413f !important; }
+body[data-dsh-campfire] :is([data-shortcut-modal='settings'], [data-dsh-surface='settings'], [role='dialog']:has([data-slot='settings.section'])) nav button[aria-current='true'] {
+  background-color: #45413f !important;
+  color: #f6d9bf;
+}
 body[data-dsh-campfire][data-cf-density='compact'] [data-cf-conversation] { --cf-content-gap: 12px; }
 body[data-dsh-campfire][data-cf-density='compact'] [data-slot='main.conversation'] [data-slot] { --dsw-radius-xl: 14px; }
 body[data-dsh-campfire][data-cf-density='compact'] [data-slot='main.conversation'] p { margin-block: .55em; }
@@ -98,70 +229,197 @@ body[data-dsh-campfire][data-cf-density='compact'] [data-slot='main.conversation
 body[data-dsh-campfire][data-cf-density='compact'] [data-slot='main.conversation'] pre { margin-block: .75em; }
 body[data-dsh-campfire][data-cf-density='compact'] [data-conversation-content] { row-gap: 12px; }
 
-/* Windows Desktop 0.2.0-rc.2. These rules do not depend on skin-center's
-   data-dsh-surface annotations and do not change the Web appearance. */
+/* Windows Desktop 0.2.0-rc.2 center-column adapter. */
 body[data-dsh-campfire][data-cf-desktop] [data-cf-center-column]:has([data-cf-conversation]) { background: transparent !important; }
-body[data-dsh-campfire][data-cf-desktop] [data-slot='sidebar'] > div { background-color: #343130 !important; }
-body[data-dsh-campfire][data-cf-desktop] [role='dialog'] {
-  --dsw-alias-bg-base: #343130;
-  background-color: #343130 !important;
-}
-/* Settings cards and actions are also matched through the official slot. */
-body[data-dsh-campfire][data-cf-desktop] [role='dialog']:has([data-slot='settings.section']) {
-  --dsw-alias-settings-card-fill: #403c3a;
-}
-body[data-dsh-campfire][data-cf-desktop] [role='dialog']:has([data-slot='settings.section']) :is(li[data-plugin-entry], li[data-agent-preset-id], li[class*='_rowCard']) {
-  background-color: var(--dsw-alias-settings-card-fill);
-}
-body[data-dsh-campfire][data-cf-desktop] [role='dialog']:has([data-slot='settings.section']) :is(li[data-plugin-entry], li[data-agent-preset-id], li[class*='_rowCard']):hover,
-body[data-dsh-campfire][data-cf-desktop] [role='dialog']:has([data-slot='settings.section']) :is(li[data-plugin-entry], li[data-agent-preset-id], li[class*='_rowCard']):is([aria-selected='true'], [aria-current='true'], [data-active='true']) {
-  background-color: #45413f;
-}
-body[data-dsh-campfire][data-cf-desktop] [role='dialog']:has([data-slot='settings.section']) :is(button[class*='_outline_'], button[class*='_secondaryButton'], button[class*='_addButton'], button[class*='_creatorButton']) {
-  background-color: #403c3a;
-}
-body[data-dsh-campfire][data-cf-desktop] [role='dialog']:has([data-slot='settings.section']) button[role='tab'][aria-selected='true'] {
-  background-color: #45413f !important;
-  color: #e8a15b !important;
-  border-color: #e8a15b !important;
-}
-body[data-dsh-campfire][data-cf-desktop] [data-slot='sidebar'] [role='treeitem'][aria-selected='true'],
-body[data-dsh-campfire][data-cf-desktop] [data-slot='sidebar'] button:is([aria-current='true'], [aria-pressed='true']),
-body[data-dsh-campfire][data-cf-desktop] [role='dialog']:has([data-slot='settings.section']) nav button[aria-current='true'] {
-  background-color: #45413f !important;
-}
 /* MenuSurface paints its own material child; keep its parent transparent. */
-body[data-dsh-campfire][data-cf-desktop] :is([role='menu'], [role='group'])[data-menu-material] { background-color: transparent !important; }
-body[data-dsh-campfire][data-cf-desktop] :is([role='menu'], [role='listbox']):not([data-menu-material]) { background-color: var(--dsw-menu-surface-fill) !important; }
+body[data-dsh-campfire] :is([role='menu'], [role='group'])[data-menu-material] { background-color: transparent !important; }
+body[data-dsh-campfire] :is([role='menu'], [role='listbox']):not([data-menu-material]) { background-color: var(--dsw-menu-surface-fill) !important; }
+body[data-dsh-campfire] :is([role='menu'], [role='listbox'], [role='group'][data-menu-material]) {
+  --dsw-alias-bg-base: #343130;
+  --dsw-alias-bg-layer-1: #3d3937;
+  --dsw-alias-bg-layer-2: #403c3a;
+  --dsw-alias-bg-layer-3: #45413f;
+  --dsw-alias-label-secondary: #bcb3a7;
+  --dsw-alias-label-tertiary: #a69e93;
+  --dsw-alias-label-primary-dimmed: #d9cbb9;
+  --dsw-alias-label-dimmed: #a69e93;
+  --dsw-alias-border-l1: #a9a4a01a;
+  --dsw-alias-border-l2: #a9a4a02e;
+  --dsw-alias-border-l3: #a9a4a03d;
+  --dsw-alias-border-l4: #a9a4a052;
+}
 /* HoverCard sets this variable locally. Its official inline preview timing
    property identifies the actual portal node without matching a hashed class. */
-body[data-dsh-campfire][data-cf-desktop] [style*='--dsh-hover-preview-fade'] { --dsw-hovercard-bg: #343130; }
-body[data-dsh-campfire][data-cf-desktop] :is(select, option, optgroup) {
+body[data-dsh-campfire] [style*='--dsh-hover-preview-fade'] { --dsw-hovercard-bg: #343130; }
+body[data-dsh-campfire] :is(select, option, optgroup) {
   color-scheme: dark;
   background-color: #403c3a;
   color: var(--dsw-alias-label-primary);
 }
 
-.cf-settings { --dsw-alias-interactive-bg-hover: #849c931a; --dsw-alias-interactive-bg-active: #849c932e; color: var(--dsw-alias-label-primary, #e7e9ec); font-family: inherit; max-width: 740px; padding-bottom: 24px; }
+/* Outer Wilds-inspired navigation. Official slots and accessibility states keep
+   this independent of CSS-module hashes and third-party skin annotations.
+   The host still owns row heights, truncation, scrolling and the collapsed rail. */
+body[data-dsh-campfire] [data-slot='sidebar'] > div {
+  --cf-nav-orange: #ed9454;
+  --cf-nav-cream: #f6d9bf;
+  --cf-nav-muted: #a69e93;
+  --cf-nav-line: #ed945438;
+  --cf-nav-hover: #403c3a;
+  --cf-nav-active: #45413f;
+  --dsw-alias-label-primary: #d9cbb9;
+  --dsw-alias-label-secondary: var(--cf-nav-muted);
+  --dsw-alias-label-tertiary: #958d82;
+  --dsw-alias-label-caption: var(--cf-nav-muted);
+  --dsw-alias-interactive-bg-hover: var(--cf-nav-hover);
+  --dsw-alias-interactive-bg-active: var(--cf-nav-active);
+  --dsw-focus-ring-color: var(--cf-nav-cream);
+  --dsw-radius-md: 4px;
+  --dsw-radius-sm: 3px;
+  --dsh-scrollbar-thumb: #ed94542b;
+  --dsh-scrollbar-thumb-hover: #ed945461;
+  background-color: #343130 !important;
+  color: var(--dsw-alias-label-primary);
+  font-family: var(--cf-font-family);
+  border-inline-end: 1px solid #ed94542b;
+}
+body[data-dsh-campfire] [data-slot='sidebar'] :is(button, input) { font-family: inherit; }
+body[data-dsh-campfire] [data-slot='sidebar.brand.mark'] { color: var(--cf-nav-cream); }
+/* Direct child excludes the brand button, which also starts a new session. */
+body[data-dsh-campfire] [data-slot='sidebar'] > div > button {
+  color: var(--cf-nav-orange);
+  background: transparent;
+  border: 1px solid #ed9454a6;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: .06em;
+  box-shadow: none;
+}
+body[data-dsh-campfire] [data-slot='sidebar'] > div > button:is(:hover, :focus-visible) {
+  color: var(--cf-nav-cream);
+  background: var(--cf-nav-hover);
+  border-color: var(--cf-nav-cream);
+}
+body[data-dsh-campfire] [data-slot='sidebar'] > div > nav {
+  padding-bottom: 12px;
+  margin-bottom: 12px;
+  border-bottom: 1px dotted var(--cf-nav-line);
+}
+body[data-dsh-campfire] [data-slot='sidebar'] > div > nav button {
+  position: relative;
+  color: var(--cf-nav-orange);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: .035em;
+  border-radius: 3px;
+}
+body[data-dsh-campfire] [data-slot='sidebar'] > div > nav button:is(:hover, :focus-visible, [aria-current='page']) {
+  color: var(--cf-nav-cream);
+  background: var(--cf-nav-hover);
+}
+body[data-dsh-campfire] [data-slot='sidebar'] > div > nav button[aria-current='page'] {
+  background-color: var(--cf-nav-active);
+  box-shadow: inset 2px 0 var(--cf-nav-orange);
+}
+/* A small menu chevron appears only in wide navigation; never covers rail icons. */
+body[data-dsh-campfire] [data-slot='sidebar'] > div > nav button:has(> span + span) { padding-inline-end: 22px; }
+body[data-dsh-campfire] [data-slot='sidebar'] > div > nav button:has(> span + span)::after {
+  content: '';
+  position: absolute;
+  inset-inline-end: 9px;
+  top: calc(50% - 4px);
+  width: 8px;
+  height: 8px;
+  background: currentColor;
+  clip-path: polygon(0 0, 55% 0, 100% 50%, 55% 100%, 0 100%, 45% 50%);
+  opacity: 0;
+  pointer-events: none;
+}
+body[data-dsh-campfire] [data-slot='sidebar'] > div > nav button:is(:hover, :focus-visible, [aria-current='page'])::after { opacity: 1; }
+body[data-dsh-campfire] [data-slot='sidebar.workspaces'] > div > div:first-child > span {
+  color: var(--cf-nav-orange);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: .08em;
+}
+body[data-dsh-campfire] [data-slot='sidebar'] [role='treeitem'] {
+  border-radius: 3px;
+  letter-spacing: .005em;
+  font-weight: 400;
+}
+body[data-dsh-campfire] [data-slot='sidebar'] [role='treeitem'][aria-expanded] { color: #d9cbb9; font-weight: 500; }
+body[data-dsh-campfire] [data-slot='sidebar'] [role='treeitem']:hover { background-color: var(--cf-nav-hover); }
+body[data-dsh-campfire] [data-slot='sidebar'] [role='treeitem'][aria-selected='true'] {
+  color: var(--cf-nav-cream);
+  background-color: var(--cf-nav-active) !important;
+  box-shadow: inset 2px 0 var(--cf-nav-orange);
+}
+body[data-dsh-campfire] [data-slot='sidebar'] > div > div:has(> div > [data-slot='sidebar.settings']) {
+  padding-top: 8px;
+  border-top: 1px dotted var(--cf-nav-line);
+}
+body[data-dsh-campfire] [data-slot='sidebar'] [data-slot='settings.launcher'] button {
+  color: var(--cf-nav-orange);
+  font-weight: 600;
+  letter-spacing: .04em;
+  border-radius: 3px;
+}
+body[data-dsh-campfire] [data-slot='sidebar'] [data-slot='settings.launcher'] button:is(:hover, :focus-visible) {
+  color: var(--cf-nav-cream);
+  background-color: var(--cf-nav-hover);
+}
+body[data-dsh-campfire] [data-slot='sidebar'] :is(button, input, [role='tree']):focus-visible {
+  outline: 1px solid var(--cf-nav-cream);
+  outline-offset: -2px;
+}
+/* Rail geometry, including Desktop caption buttons, stays under host control. */
+body[data-dsh-campfire] [data-sidebar-collapsed='true'] [data-slot='sidebar'] > div > button { border-color: transparent; letter-spacing: 0; }
+
+/* Keep the original settings surface and spacing. Game-inspired details are
+   limited to controls inside this plugin's settings section. */
+.cf-settings {
+  --dsw-alias-interactive-bg-hover: #403c3a;
+  --dsw-alias-interactive-bg-active: #45413f;
+  --cf-setting-orange: #ee9050;
+  --cf-setting-cream: #f6d7bc;
+  --cf-setting-ink: var(--cf-setting-orange);
+  --cf-setting-base: var(--dsw-alias-bg-base, #343130);
+  --cf-setting-track: #57514c;
+  container: cf-settings / inline-size;
+  color: var(--dsw-alias-label-primary);
+  font-family: 'DSH Outer Wilds Jost', 'DSH Outer Wilds Source Han Sans CN', sans-serif;
+}
 .cf-settings h2 { margin: 0 0 6px; font-size: 22px; font-weight: 600; letter-spacing: .02em; }
-.cf-settings p { color: var(--dsw-alias-label-secondary, #a8b1b5); font-size: 13px; line-height: 1.7; margin: 0 0 20px; }
-.cf-settings .cf-mini { position: relative; height: 160px; overflow: hidden; border: 1px solid var(--dsw-alias-border-l2, #34424b); border-radius: 14px; background: #000; margin-bottom: 20px; }
-.cf-mini img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: right bottom; }
-.cf-row { display: flex; align-items: center; justify-content: space-between; gap: 20px; border-bottom: 1px solid var(--dsw-alias-border-l1, #34424b); padding: 18px 0; }
-.cf-row label, .cf-row legend { font-size: 14px; font-weight: 500; }
-.cf-row small { display: block; font-size: 12px; color: var(--dsw-alias-label-secondary, #a8b1b5); margin-top: 5px; }
-.cf-row fieldset { border: 0; padding: 0; margin: 0; width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
-.cf-row legend { float: left; }
-.cf-segments { display: flex; flex-wrap: wrap; gap: 4px; }
-.cf-settings button { font: inherit; font-size: 13px; cursor: pointer; padding: 8px 13px; border-radius: 8px; border: 1px solid var(--dsw-alias-border-l2, #34424b); color: inherit; background: transparent; }
-.cf-settings button:hover:not(:disabled) { background: var(--dsw-alias-interactive-bg-hover, #24363e); }
-.cf-settings button[aria-pressed='true'], .cf-settings .cf-primary { background: #e8a15b; color: #161a1c; border-color: #e8a15b; }
-.cf-settings button:focus-visible, .cf-settings input:focus-visible { outline: 2px solid #e8a15b; outline-offset: 3px; }
-.cf-settings button:disabled, .cf-settings input:disabled { opacity: .5; cursor: not-allowed; }
-.cf-range { display: flex; align-items: center; gap: 12px; min-width: min(240px, 48%); }
-.cf-range input { min-width: 0; width: 100%; accent-color: #e8a15b; }
-.cf-range output { font-size: 12px; min-width: 36px; text-align: right; font-variant-numeric: tabular-nums; }
-.cf-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 22px; }
-.cf-status { min-height: 22px; color: var(--dsw-alias-label-secondary, #a8b1b5); font-size: 12px; line-height: 1.6; margin-top: 12px; }
-.cf-status[data-error='true'] { color: var(--dsw-alias-state-error-primary, #f29a90); }
-@media (max-width: 600px) { .cf-row, .cf-row fieldset { flex-direction: column; align-items: stretch; gap: 12px; } .cf-range { width: 100%; } .cf-row legend { float: none; margin-bottom: 12px; } }
+.cf-settings p { color: var(--dsw-alias-label-secondary); font-size: 13px; line-height: 1.7; margin: 0 0 20px; }
+.cf-settings .cf-mini { position: relative; height: 160px; overflow: hidden; border: 1px solid var(--dsw-alias-border-l2); border-radius: 14px; background: #000; margin-bottom: 20px; }
+.cf-settings .cf-mini img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: right bottom; }
+.cf-settings .cf-row { display: flex; align-items: center; justify-content: space-between; gap: 20px; border-bottom: 1px solid var(--dsw-alias-border-l1); padding: 18px 0; }
+.cf-settings .cf-row-label { min-width: 0; font-size: 16px; font-weight: 700; color: var(--cf-setting-orange); }
+.cf-settings .cf-row small { display: block; font-size: 12px; font-weight: 400; color: var(--dsw-alias-label-secondary); margin-top: 5px; }
+.cf-settings .cf-segments { display: flex; flex-wrap: wrap; gap: 4px; }
+.cf-settings .cf-segments button { min-width: 52px; text-align: center; }
+.cf-settings .cf-range { display: flex; align-items: center; gap: 12px; width: 48%; min-width: 240px; }
+.cf-settings .cf-range:is(:hover, :focus-within) { --cf-setting-ink: var(--cf-setting-cream); }
+.cf-settings button { box-sizing: border-box; min-height: 36px; padding: 6px 12px; border: 2px solid var(--cf-setting-orange); border-radius: 0; background: #1b191880; color: var(--cf-setting-orange); font: inherit; font-size: 14px; font-weight: 600; line-height: 1.45; cursor: pointer; }
+.cf-settings button:is(:hover, :focus-visible):not(:disabled) { border-color: var(--cf-setting-cream); color: var(--cf-setting-cream); background: #f6d7bc0d; }
+.cf-settings button[aria-pressed='true'], .cf-settings button.cf-primary { border-color: var(--cf-setting-cream); background: var(--cf-setting-cream); color: #241d18; }
+.cf-settings button[aria-pressed='true']:is(:hover, :focus-visible):not(:disabled), .cf-settings button.cf-primary:is(:hover, :focus-visible):not(:disabled) { background: #ffe6ce; color: #241d18; }
+.cf-settings button:focus-visible, .cf-settings input:focus-visible { outline: 2px solid var(--cf-setting-cream); outline-offset: 2px; }
+.cf-settings button:disabled, .cf-settings input:disabled { opacity: .4; cursor: not-allowed; }
+.cf-settings .cf-range-track { position: relative; flex: 1; min-width: 0; padding-inline: 14px; color: var(--cf-setting-ink); }
+.cf-settings .cf-range-track::before, .cf-settings .cf-range-track::after { content: ''; position: absolute; top: calc(50% - 6px); width: 8px; height: 12px; background: currentColor; pointer-events: none; clip-path: polygon(0 50%, 58% 0, 100% 0, 44% 50%, 100% 100%, 58% 100%); }
+.cf-settings .cf-range-track::before { left: 0; }
+.cf-settings .cf-range-track::after { right: 0; transform: rotate(180deg); }
+.cf-settings .cf-range input { appearance: none; -webkit-appearance: none; display: block; width: 100%; min-width: 0; height: 28px; margin: 0; padding: 0; border: 0; background: transparent; color: var(--cf-setting-ink); cursor: pointer; }
+.cf-settings .cf-range input::-webkit-slider-runnable-track { height: 6px; border: 0; border-radius: 0; background: repeating-linear-gradient(to right, transparent 0, transparent calc(20% - 3px), var(--cf-setting-base) calc(20% - 3px), var(--cf-setting-base) 20%), linear-gradient(to right, var(--cf-setting-ink) var(--cf-range-progress), var(--cf-setting-track) var(--cf-range-progress)); }
+.cf-settings .cf-range input::-moz-range-track { height: 6px; border: 0; border-radius: 0; background: repeating-linear-gradient(to right, transparent 0, transparent calc(20% - 3px), var(--cf-setting-base) calc(20% - 3px), var(--cf-setting-base) 20%), linear-gradient(to right, var(--cf-setting-ink) var(--cf-range-progress), var(--cf-setting-track) var(--cf-range-progress)); }
+.cf-settings .cf-range input::-webkit-slider-thumb { appearance: none; -webkit-appearance: none; box-sizing: border-box; width: 18px; height: 18px; margin-top: -6px; border: 2px solid var(--cf-setting-base); border-radius: 0; background: var(--cf-setting-ink); transform: rotate(45deg); }
+.cf-settings .cf-range input::-moz-range-thumb { box-sizing: border-box; width: 18px; height: 18px; border: 2px solid var(--cf-setting-base); border-radius: 0; background: var(--cf-setting-ink); transform: rotate(45deg); }
+.cf-settings .cf-range output { flex: 0 0 66px; box-sizing: border-box; padding: 3px 7px; clip-path: polygon(10px 0, calc(100% - 10px) 0, 100% 50%, calc(100% - 10px) 100%, 10px 100%, 0 50%); background: var(--cf-setting-ink); color: #241d18; text-align: center; font-size: 14px; font-weight: 600; font-variant-numeric: tabular-nums; line-height: 1.6; }
+.cf-settings .cf-status { min-height: 22px; color: var(--dsw-alias-label-secondary); font-size: 12px; line-height: 1.6; margin-top: 12px; }
+.cf-settings .cf-status[data-error='true'] { color: var(--dsw-alias-state-error-primary, #f29a90); }
+@container cf-settings (max-width: 520px) {
+  .cf-settings .cf-row { flex-direction: column; align-items: stretch; gap: 12px; }
+  .cf-settings .cf-range { width: 100%; min-width: 0; }
+}
