@@ -57,4 +57,14 @@ SHA256 可用 PowerShell 获取：`(Get-FileHash -Algorithm SHA256 -LiteralPath 
 
 ## 当前验证范围
 
-本地检查与 GitHub 演练结果在接入完成后补记。0.1.2 已正式发布，接入演练不会再次发布它，不为验证认证而创建空更新。
+第一阶段于 2026-10-09 完成接入，发布脚本与工作流提交为 `72492c531d04c9b1c67c6da92a8b4e12eaedf10d`。
+
+- 本地类型检查通过，29 项测试全部通过；两个工作流通过 actionlint `1.7.12` 检查。
+- 本地完整构建、打包与演练通过；候选包中的 `lib/client.js` SHA256 为 `23a3b32afe84e32b70bda1f84af77db52045c4f0aae8ae9e38b9833f85631db7`，与用户已验收的客户端一致。
+- GitHub 托管 Linux runner 的 [Verify 检查](https://github.com/xikan0/dsh-outerwilds-theme/actions/runs/37876784093)通过。
+- [Release 演练](https://github.com/xikan0/dsh-outerwilds-theme/actions/runs/37876781195)通过安装、类型检查、测试、构建、包内容与已验收客户端校验、线上预检查和附件上传；`publish=false`，正式发布任务跳过。
+- 现有 `0.1.2` 已被占用，演练按设计跳过 npm publish dry-run。在隔离副本中用合成的 `0.1.3` 安装包、空 npm 配置执行新版本 dry-run，返回成功；随后匿名查询确认 npm `latest` 仍为 `0.1.2`，`0.1.3` 返回 404。
+
+GitHub 上已保存 `release-candidate` 附件，runner 已完成包内容和校验值检查。本地下载该 CI 附件两次均因网络 `unexpected EOF` 中断，未完成下载后的独立复核。正式发布任务中的跨任务附件下载、真实 OIDC 认证、两处发布与发布后下载校验，仍需在下一次真实版本发布时验证。
+
+本次接入保留 `0.1.2`，没有重复发布它，也没有为验证认证创建正式新版本。npm Trusted Publisher 账号连接按前述约定在下一次具备发布条件时配置；semantic-release 的版本计算留待第二阶段。

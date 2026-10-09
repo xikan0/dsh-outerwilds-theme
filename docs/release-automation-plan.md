@@ -1,6 +1,6 @@
 # npm 发布流程优化方案
 
-日期：2026-10-09。用户已确认按此分步方案推进；第一阶段正在接入 GitHub Actions 与发布脚本，保留手动版本收尾。实际操作见 [发布流程](release-workflow.md)。npm Trusted Publisher 在下一次正式发布前配置，semantic-release 的版本自动化按第二阶段接入。
+日期：2026-10-09。用户已确认按此分步方案推进；第一阶段已接入 GitHub Actions 与发布脚本，本地检查和 GitHub 托管 Linux runner 演练通过，保留手动版本收尾。实际操作与验证范围见 [发布流程](release-workflow.md)。npm Trusted Publisher 在下一次正式发布前配置，真实 OIDC 发布届时验证；semantic-release 的版本自动化按第二阶段接入。
 
 ## 建议
 
@@ -8,14 +8,14 @@
 
 semantic-release 根据提交信息计算版本，调用插件发布 npm 包与 GitHub Release；OIDC 则解决 CI 的 npm 认证。两者承担不同职责。官方提供 [GitHub Actions 接入方式](https://semantic-release.org/recipes/ci-configurations/github-actions/)；[npm 可信发布](https://docs.npmjs.com/trusted-publishers/)允许指定工作流使用短期身份凭据，无需维护 npm 发布令牌。
 
-## 当前仓库核对结果
+## 方案制定时的仓库状态
 
 - npm 名称为 `dsh-outerwilds-theme`，当前正式版本为 `0.1.2`，仓库为 `xikan0/dsh-outerwilds-theme`。
 - 没有 `.github/workflows` 和 semantic-release 配置。
 - 现有正式标签为 `0.1.0`、`0.1.1`、`0.1.2`，还保留历史标签 `v0.2.11`。
 - 最近提交为普通描述句，尚未使用默认分析器识别的 `fix:`、`feat:` 等格式。
 - `package.json`、锁文件、README、中文 CHANGELOG 和 Web 迭代记录由本地收尾流程维护。
-- `prepack` 调用构建；客户端构建使用包名，不嵌入包版本。Windows 本地检查已完成，Linux CI 运行效果尚未验证。
+- `prepack` 调用构建；客户端构建使用包名，不嵌入包版本。制定方案时 Windows 本地检查已完成，Linux CI 尚未验证；第一阶段接入后已通过 Linux CI 演练。
 - 0.1.2 已完成人工发布与线上包校验；本方案用于后续版本。
 
 ## 第一步：验收后触发一次发布
