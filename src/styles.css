@@ -240,6 +240,56 @@ body[data-dsh-campfire] :is([data-shortcut-modal='settings'], [data-dsh-surface=
   color: #e8a15b !important;
   border-color: #e8a15b !important;
 }
+/* Built-in plugin views use underline tabs, unlike the host's segmented tabs.
+   The sibling outlet identifies this tablist without CSS hashes or translations. */
+body[data-dsh-campfire] [data-slot='settings.section'] [role='tablist']:has(~ [role='tabpanel'] [data-slot='settings.plugins.tab']) {
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #ed94542b;
+}
+body[data-dsh-campfire] [data-slot='settings.section'] [role='tablist']:has(~ [role='tabpanel'] [data-slot='settings.plugins.tab']) > button[role='tab'] {
+  box-sizing: border-box;
+  min-height: 38px;
+  padding: 8px 16px;
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+  color: #bcb3a7;
+  font: inherit;
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 600;
+  white-space: nowrap;
+  transition: background-color 150ms ease, color 150ms ease;
+}
+body[data-dsh-campfire] [data-slot='settings.section'] [role='tablist']:has(~ [role='tabpanel'] [data-slot='settings.plugins.tab']) > button[role='tab']:hover {
+  background-color: #403c3a;
+  color: #f6d9bf;
+}
+body[data-dsh-campfire] [data-slot='settings.section'] [role='tablist']:has(~ [role='tabpanel'] [data-slot='settings.plugins.tab']) > button[role='tab'][aria-selected='true'] {
+  background-color: #45413f !important;
+  color: #f6d9bf !important;
+}
+body[data-dsh-campfire] [data-slot='settings.section'] [role='tablist']:has(~ [role='tabpanel'] [data-slot='settings.plugins.tab']) > button[role='tab']::after {
+  content: none;
+}
+body[data-dsh-campfire] [data-slot='settings.section'] [role='tablist']:has(~ [role='tabpanel'] [data-slot='settings.plugins.tab']) > button[role='tab'][aria-selected='true']::after {
+  content: '';
+  position: absolute;
+  inset: auto 16px 0;
+  height: 2px;
+  border-radius: 2px;
+  background-color: #ed9454;
+}
+body[data-dsh-campfire] [data-slot='settings.section'] [role='tablist']:has(~ [role='tabpanel'] [data-slot='settings.plugins.tab']) > button[role='tab']:focus-visible {
+  outline: 2px solid #f6d9bf;
+  outline-offset: 3px;
+}
+@media (prefers-reduced-motion: reduce) {
+  body[data-dsh-campfire] [data-slot='settings.section'] [role='tablist']:has(~ [role='tabpanel'] [data-slot='settings.plugins.tab']) > button[role='tab'] { transition: none; }
+}
 body[data-dsh-campfire] :is([data-shortcut-modal='settings'], [data-dsh-surface='settings'], [role='dialog']:has([data-slot='settings.section'])) nav button[aria-current='true'] {
   background-color: #45413f !important;
   color: #f6d9bf;
