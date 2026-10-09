@@ -158,4 +158,7 @@
 - GitHub `main` 和标签 `0.1.2` 已推送；发布标签指向正式源码提交 `8a2f0bb`。
 - 正式 GitHub Release 已创建，包含安装包和 `SHA256SUMS.txt`：<https://github.com/xikan0/dsh-outerwilds-theme/releases/tag/0.1.2>。
 - GitHub 附件已下载复核，安装包 SHA256 与本地正式包一致：`755c6384522ed4000412378de10c47a4b379fce8b0bdbfbce351709eee7753e9`。
-- npm 的原有凭据未通过登录校验；用户提出使用发布令牌，待用户在本机配置凭据后继续发布。令牌不写入项目文件和更新记录。
+- 用户在本机重新配置 npm 凭据，登录校验和 npm 要求的额外账号验证已通过。令牌不写入项目文件和更新记录。
+- npm 正式包 `dsh-outerwilds-theme@0.1.2` 已发布，线上版本与 `latest` 标签均为 `0.1.2`：<https://www.npmjs.com/package/dsh-outerwilds-theme/v/0.1.2>。
+- npm 返回的 SHA512 完整性信息和 SHA1 与正式包一致；从 npm 下载的安装包 SHA256 与 GitHub 附件、本地正式包均一致。
+- 本版本的 GitHub 代码推送、GitHub Release 和 npm 正式发布均已完成；最终校验证据保存于 `.sandbox/release/0.1.2/publication-verification.json`。
