@@ -140,6 +140,28 @@ body[data-dsh-campfire] [data-slot='conversation.session.header.actions'] {
 body[data-dsh-campfire] [data-team-action] > button:is(:hover, :focus-visible, [aria-expanded='true']) {
   color: #e8a15b;
 }
+/* User messages and fenced code keep independent translucent reading surfaces.
+   The host paints code on both the outer block and <pre>; clear the outer
+   fills so their alpha values do not stack and make the result nearly solid. */
+body[data-dsh-campfire] [data-cf-conversation] {
+  --dsw-specific-bubble: rgba(52, 49, 48, .55);
+}
+body[data-dsh-campfire] [data-cf-conversation] :has(> [data-code-block-content]) {
+  --dsl-code-block-background: rgba(52, 49, 48, .25);
+  --dsl-code-block-banner-background-color: rgba(69, 65, 63, .35);
+  background: transparent !important;
+}
+body[data-dsh-campfire] [data-cf-conversation] :has(> [data-code-block-content]) > :has(> [data-code-block-banner]) {
+  background: transparent !important;
+}
+body[data-dsh-campfire] [data-cf-conversation] :has(> [data-code-block-content]) [data-code-block-banner] {
+  background: var(--dsl-code-block-banner-background-color) !important;
+}
+body[data-dsh-campfire] [data-cf-conversation] [data-code-block-content] pre {
+  background: var(--dsl-code-block-background) !important;
+  font-size: calc(var(--dsw-font-markdown-code-block-font-size, 11px) + 2px);
+  line-height: calc(var(--dsw-font-markdown-code-block-line-height, 19px) + 2px);
+}
 body[data-dsh-campfire] [data-code-block-banner] {
   --dsw-alias-label-tertiary: #d9bb98;
   --dsw-alias-label-secondary: #bcb3a7;
