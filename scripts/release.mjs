@@ -163,8 +163,9 @@ async function preflight(input) {
     decision = registryDecision(manifest, state.metadata, state.latest);
     if (tagCommit && tagCommit !== manifest.sourceCommit) throw new Error('The remote release tag points to a different commit.');
   }
-  npm(['publish', resolve(input.directory, manifest.filename), '--dry-run', '--ignore-scripts', '--access', 'public', '--tag', 'latest', '--registry', REGISTRY], { capture: false });
-  await saveJson(resolve(input.directory, 'preflight.json'), { mode: decision, npmVersionExists: !!state.metadata, npmLatest: state.latest, tagCommit, requestedCommit: input.commit });
+  if (!state.metadata) npm(['publish', resolve(input.directory, manifest.filename), '--dry-run', '--ignore-scripts', '--access', 'public', '--tag', 'latest', '--registry', REGISTRY], { capture: false });
+  else console.log('npm version already exists; skipping its publish dry-run. Artifact checks have passed.');
+  await saveJson(resolve(input.directory, 'preflight.json'), { mode: decision, npmVersionExists: !!state.metadata, npmDryRunPerformed: !state.metadata, npmLatest: state.latest, tagCommit, requestedCommit: input.commit });
   console.log(publishing ? `Preflight passed: ${decision}.` : 'Preview passed; no version, tag or release was published.');
 }
 async function waitForNpm(manifest) {

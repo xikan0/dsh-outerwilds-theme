@@ -13,6 +13,8 @@ GitHub Actions 第一阶段发布流程于 2026-10-09 接入。继续由用户�
 
 工作流入口为 [Release](https://github.com/xikan0/dsh-outerwilds-theme/actions/workflows/release.yml)，默认 `publish=false`，只进行检查、构建、打包与 dry-run。正常推送和 PR 的 Verify 工作流只检查类型和测试。
 
+对于已经发布的版本，npm 的 publish dry-run 也可能因版本占用而拒绝。此时演练与同包恢复跳过该操作，继续核对安装包，并在 `preflight.json` 明确记录；未占用版本仍必须执行 dry-run。
+
 助手可通过 `gh workflow run release.yml --ref main` 传入以下字段：
 
 | 字段 | 内容 |
