@@ -139,7 +139,7 @@ test('unknown host layout falls back to palette without claiming a scene', () =>
   runtime.update({...DEFAULTS,enabled:true}); assert.equal(theme.overrides,1); assert.equal(document.querySelector('.cf-stage'),null);runtime.dispose();dom.window.close();
 });
 
-test('Desktop adaptation handles late platform markers, column moves and cleanup while retaining the Web palette', async () => {
+test('Desktop adaptation handles late platform markers, column moves and cleanup with the shared panel palette', async () => {
   const dom = new JSDOM('<body><div id="root"><div data-slot="root"><div data-test-frame><div data-test-sidebar><div data-slot="sidebar"></div></div><div data-test-center><div data-slot="main"><div data-slot="main.conversation"><main data-phase="hero"></main></div></div></div><div data-shell-overlay></div></div></div></div></body>');
   Object.assign(globalThis, { window: dom.window, document: dom.window.document, MutationObserver: dom.window.MutationObserver });
   globalThis.ResizeObserver = class { observe() {} disconnect() {} };
@@ -149,7 +149,7 @@ test('Desktop adaptation handles late platform markers, column moves and cleanup
   dom.window.HTMLElement.prototype.getBoundingClientRect = () => ({ left: 0, top: 0, width: 1200, height: 800, right: 1200, bottom: 800 });
   runtime.update({ ...DEFAULTS, enabled: true });
   const webTokens = theme.tokens;
-  assert.equal(webTokens['--dsw-alias-bg-layer-2'].dark, '#16262d');
+  assert.equal(webTokens['--dsw-alias-bg-layer-2'].dark, '#403c3a');
   assert.equal(document.body.hasAttribute('data-cf-desktop'), false);
   assert.equal(document.querySelector('.cf-stage').dataset.sky, 'refined');
   const acceptedArt = document.querySelector('.cf-art'), acceptedSky = document.querySelector('.cf-sky');
@@ -165,7 +165,7 @@ test('Desktop adaptation handles late platform markers, column moves and cleanup
   assert.equal(document.querySelector('.cf-art').style.backgroundImage, acceptedBackground);
   assert.equal(document.querySelector('.cf-star,.cf-twinkle,.cf-star-shutter'), null, 'Desktop must not restore the old star animation');
   assert.equal(theme.tokens['--dsw-alias-bg-layer-2'].dark, '#403c3a');
-  assert.equal(theme.tokens['--dsw-alias-bg-base'].dark, '#071017');
+  assert.equal(theme.tokens['--dsw-alias-bg-base'].dark, '#343130');
   runtime.update({ ...DEFAULTS, enabled: true, opacity: 90 });
   assert.equal(theme.tokens['--dsw-menu-surface-fill'].dark, 'rgba(52, 49, 48, 0.9)');
   const replacementColumn = document.createElement('div');

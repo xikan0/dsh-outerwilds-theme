@@ -84,7 +84,7 @@ export function createVisualRuntime(theme: ThemeService, onAdaptation: (ready: b
         // Set the guard before overrideTokens emits theme/change synchronously.
         tokenKey = nextTokenKey;
         const old = releaseTokens;
-        releaseTokens = theme.overrideTokens(PACKAGE_ID, palette(prefs.opacity, desktop)); old?.();
+        releaseTokens = theme.overrideTokens(PACKAGE_ID, palette(prefs.opacity)); old?.();
       }
       findAdapter();
     } else if (active) {

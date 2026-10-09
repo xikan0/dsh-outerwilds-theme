@@ -11,7 +11,7 @@
 - 侧边栏采用暖橙导航、米白选中反馈、细虚线分组和更接近游戏菜单的粗体字样，保留 DSH 的紧凑布局。
 - 英文使用 Jost，中文使用思源黑体，字体随插件提供，无需在线加载。来源见 [字体说明](FONTS.md)。
 
-当前源码版本是 **0.1.2-beta.5**（Web 本地测试版），最新正式版为 **0.1.1**，设置入口显示为“星际拓荒”。0.1.1 主题主体已在 **DSH 0.2.0-rc.2** 的 Web 与 Windows Desktop 上完成个人使用验收。本地测试版的代码字号、代码块背景、用户消息气泡背景、设置滑块的点击与输入操作及内置插件页签的独立样式已通过用户 Web 审查，0.1.2 继续迭代。其他系统和 DSH 版本还没有验证。
+当前源码版本是 **0.1.2**，设置入口显示为“星际拓荒”。本版本的代码字号、代码块背景、用户消息气泡背景、设置滑块、内置插件页签、公共面板配色及聊天输入区底部渐变已在 **DSH 0.2.0-rc.2 Web** 上通过用户审查。0.1.1 主题主体此前已在 Web 与 Windows Desktop 上完成个人使用验收；0.1.2 的新改动尚未在 Desktop 上进行实际外观验收。其他系统和 DSH 版本还没有验证。更新内容见 [CHANGELOG](CHANGELOG.md)。
 
 ## 安装和启用
 
@@ -22,22 +22,22 @@
 先安装 DSH，并确保终端能运行 `dsh`。在终端运行：
 
 ```powershell
-dsh plugin --profile web add dsh-outerwilds-theme@0.1.1
+dsh plugin --profile web add dsh-outerwilds-theme@0.1.2
 dsh web
 ```
 
-如果使用本地安装包，把命令中的包名替换为实际文件路径，例如 `./dsh-outerwilds-theme-0.1.1.tgz`。如果 Web 已经运行，安装后需要重启。
+如果使用本地安装包，把命令中的包名替换为实际文件路径，例如 `./dsh-outerwilds-theme-0.1.2.tgz`。如果 Web 已经运行，安装后需要重启。
 
 ### Harness Desktop
 
-如果你的版本提供插件管理入口，在侧栏打开 **插件 → 添加插件**，填入 `dsh-outerwilds-theme@0.1.1`，注册表选择官方 npm。使用本地安装包时填入完整路径，例如 `C:/Downloads/dsh-outerwilds-theme-0.1.1.tgz`。安装并启用插件后，完全退出应用（包括托盘）并重新打开。
+如果你的版本提供插件管理入口，在侧栏打开 **插件 → 添加插件**，填入 `dsh-outerwilds-theme@0.1.2`，注册表选择官方 npm。使用本地安装包时填入完整路径，例如 `C:/Downloads/dsh-outerwilds-theme-0.1.2.tgz`。安装并启用插件后，完全退出应用（包括托盘）并重新打开。
 
 桌面版和 Web 的插件安装位置不同。命令安装请参考 [DSH 官方桌面端说明](https://github.com/deepseek-ai/deepseek-harness/blob/master/apps/desktop/README.zh.md#bundled-command-runtime)，使用桌面版随附的命令；旧版本可能不支持该方式，不要用 npm 版 `dsh` 修改桌面端的插件目录。
 
 如果使用桌面版随附的 `dsh` 命令，先完全退出 Desktop，再运行：
 
 ```powershell
-dsh plugin --profile desktop add dsh-outerwilds-theme@0.1.1
+dsh plugin --profile desktop add dsh-outerwilds-theme@0.1.2
 ```
 
 安装后重新打开 Desktop。
@@ -63,7 +63,15 @@ dsh plugin --profile desktop add dsh-outerwilds-theme@0.1.1
 
 设置修改后会立即预览。“恢复主题默认”会重置主题参数，保留启用状态和正文字号。
 
-本地测试版的三个滑块均支持点击两侧箭头逐步调节，或在右侧数值框直接输入。手动输入后按 Enter 或移开焦点生效，按 Esc 取消；超出范围的数值会自动限制到边界，空值恢复原值。
+三个滑块均支持点击两侧箭头逐步调节，或在右侧数值框直接输入。手动输入后按 Enter 或移开焦点生效，按 Esc 取消；超出范围的数值会自动限制到边界，空值恢复原值。
+
+## 插件外观兼容范围
+
+主题通过 DSH 公共主题变量统一暖灰面板、米白文字和橙色强调。使用这些变量与 DSH 公共组件的插件通常会跟随配色，不必逐个添加主题补丁。现有 Market 主体通过这一方式跟随主题。
+
+Context 的独立页面另有阅读底色和星空背景适配。写死颜色、自行设计控件或使用独立页面的插件，仍可能需要局部处理；公共配色不保证任意插件都自动具备完整的星空背景和透明效果。警告、成功等状态颜色保留原有含义。
+
+Web 迭代审查时，助手只安装并启动或重启测试服务，使用 `--no-open` 关闭自动打开浏览器，由用户自行打开页面并审查。
 
 ## 卸载
 

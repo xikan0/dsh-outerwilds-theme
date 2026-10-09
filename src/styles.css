@@ -54,6 +54,11 @@ body[data-dsh-campfire] :where(*):not(:where(svg, svg *, math, math *, .katex, .
 body[data-dsh-campfire] #root { position: relative; z-index: 1; }
 body[data-dsh-campfire] [data-cf-frame], body[data-dsh-campfire] [data-cf-conversation] { background: transparent !important; }
 body[data-dsh-campfire] [data-cf-conversation][data-phase='active'] { background: linear-gradient(90deg, #0002 0%, #0001 62%, #0000 100%) !important; }
+/* The host fades the composer seat to a solid base after 36px. Retain only
+   a light reading shade over the sky, independently of the input card fill. */
+body[data-dsh-campfire] [data-cf-conversation][data-phase='active'] [data-composer-seat] {
+  background: linear-gradient(180deg, rgba(52, 49, 48, 0) 0px, rgba(52, 49, 48, .08) 36px, rgba(52, 49, 48, .16) 100%) !important;
+}
 body[data-dsh-campfire] { --dsw-focus-ring-color: #e8a15b; --dsw-radius-panel: 20px; }
 /* Trajectory and Context keep their own reading surfaces over the shared sky.
    Match the official conversation slot and Context's named roots, not hashes. */
@@ -323,6 +328,11 @@ body[data-dsh-campfire] :is([role='menu'], [role='listbox'], [role='group'][data
 /* HoverCard sets this variable locally. Its official inline preview timing
    property identifies the actual portal node without matching a hashed class. */
 body[data-dsh-campfire] [style*='--dsh-hover-preview-fade'] { --dsw-hovercard-bg: #343130; }
+/* These public controls consume static brand/white colors instead of aliases.
+   Match their semantic roles and the host toast timing marker, keeping status
+   icons and third-party alerts outside this narrow action-text override. */
+body[data-dsh-campfire] [role='tooltip'] { color: var(--dsw-alias-label-primary); }
+body[data-dsh-campfire] [role='alert'][style*='--dsh-toast-hold'] button { color: var(--dsw-alias-brand-primary); }
 body[data-dsh-campfire] :is(select, option, optgroup) {
   color-scheme: dark;
   background-color: #403c3a;

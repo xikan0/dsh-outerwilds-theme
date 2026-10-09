@@ -1,16 +1,20 @@
-export function palette(opacity: number, desktop = false): Record<string, { light: string; dark: string }> {
+export function palette(opacity: number): Record<string, { light: string; dark: string }> {
   const surface = `rgba(52, 49, 48, ${opacity / 100})`;
   const colors: Record<string, string> = {
-    '--dsw-alias-bg-base': '#071017', '--dsw-alias-bg-layer-1': '#101c23', '--dsw-alias-bg-layer-2': '#16262d', '--dsw-alias-bg-layer-3': '#1c3036',
-    '--dsw-alias-bg-overlay': '#23373d', '--dsw-alias-bg-module-platform': '#17282f',
+    // Shared panels inherit the same warm surfaces on both clients. The scene
+    // owns its background independently, so plugins need no page-name adapter.
+    '--dsw-alias-bg-base': '#343130', '--dsw-alias-bg-layer-1': '#3d3937', '--dsw-alias-bg-layer-2': '#403c3a', '--dsw-alias-bg-layer-3': '#45413f',
+    '--dsw-alias-bg-layer-4': '#4d4946', '--dsw-alias-bg-overlay': '#45413f', '--dsw-alias-bg-module-platform': '#403c3a',
+    '--dsw-alias-bg-document-preview': '#343130', '--dsw-alias-bg-document-selection': '#e8a15b66',
+    '--dsw-alias-bg-mask-drop': '#343130b3', '--dsw-alias-bg-multi-select': '#45413f', '--dsw-alias-bg-skeleton': '#a9a4a014',
     '--dsw-alias-label-primary': '#eee8d9', '--dsw-alias-label-primary-bluish': '#e2dacd', '--dsw-alias-label-primary-dimmed': '#d9cbb9',
     '--dsw-alias-label-secondary': '#bcb3a7', '--dsw-alias-label-tertiary': '#a69e93', '--dsw-alias-label-dimmed': '#958c7e',
-    '--dsw-alias-label-caption': '#bcb3a7', '--dsw-alias-label-primary-inverted': '#11191e',
+    '--dsw-alias-label-caption': '#bcb3a7', '--dsw-alias-label-primary-inverted': '#241d18', '--dsw-alias-label-primary-foreground': '#241d18',
     '--dsw-alias-label-document-preview': '#bcb3a7', '--dsw-alias-label-deep-diving': '#bcb3a7',
     '--dsw-alias-label-deep-diving-shimmer': '#f3d3a4', '--dsw-alias-label-shimmer': '#f3d3a4',
     '--dsw-alias-separator-primary': '#a69e9373',
-    '--dsw-alias-border-l1': '#92aaa11a', '--dsw-alias-border-l2': '#92aaa12e', '--dsw-alias-border-l3': '#92aaa13d', '--dsw-alias-border-l4': '#92aaa152',
-    '--dsw-alias-brand-primary': '#e8a15b', '--dsw-alias-brand-text': '#eee8d9', '--dsw-alias-brand-primary-invert': '#101c23',
+    '--dsw-alias-border-l1': '#a9a4a01a', '--dsw-alias-border-l2': '#a9a4a02e', '--dsw-alias-border-l3': '#a9a4a03d', '--dsw-alias-border-l4': '#a9a4a052',
+    '--dsw-alias-brand-primary': '#e8a15b', '--dsw-alias-brand-text': '#eee8d9', '--dsw-alias-brand-primary-invert': '#241d18',
     '--dsw-alias-button-primary-fill': '#e8a15b', '--dsw-alias-button-primary-hover': '#efb77c',
     '--dsw-alias-button-info-fill': '#e8a15b', '--dsw-alias-button-info-hover': '#efb77c',
     '--dsw-alias-interactive-bg-hover': '#a9a4a033', '--dsw-alias-interactive-bg-active': '#a9a4a04d', '--dsw-alias-interactive-bg-hover-accent': '#e8a15b24',
@@ -21,19 +25,18 @@ export function palette(opacity: number, desktop = false): Record<string, { ligh
     '--dsw-menu-surface-fill': surface, '--dsw-specific-menu': surface, '--dsw-alias-menu-group-header-fill': '#343130f5', '--dsw-alias-menu-icon': '#d9cbb9',
     // Shared controls can be portalled outside the settings dialog on either client.
     '--dsw-specific-selector': '#403c3a', '--dsw-specific-tip': '#403c3a',
+    '--dsw-alias-settings-card-fill': '#403c3a', '--dsw-alias-settings-card-stroke': '#a9a4a052',
+    '--dsw-alias-button-contrast-fill': '#eee8d9', '--dsw-alias-button-primary-dimmed': '#403c3a',
     '--dsw-alias-button-elevated-fill': '#403c3a', '--dsw-alias-button-floating-fill': '#403c3a', '--dsw-alias-button-floating-hover': '#45413f',
     '--dsw-alias-button-ghost-active-fill': '#45413f', '--dsw-alias-button-ghost-active-hover': '#4d4946', '--dsw-alias-button-ghost-active-border': '#e8a15b',
     '--dsw-alias-button-tool-bar-fill': '#403c3a', '--dsw-alias-button-tool-bar-hover': '#45413f',
+    '--dsw-alias-button-tool-bar-fill-invisible': '#403c3a99',
     '--dsw-alias-interactive-bg-hover-solid': '#45413f',
-    '--dsw-alias-tooltip-bg': '#343130', '--dsw-alias-toast-bg': '#343130', '--dsw-alias-link': '#e8a15b',
+    '--dsw-alias-tooltip-bg': '#343130', '--dsw-alias-tooltip-key-bg': '#45413f',
+    '--dsw-alias-toast-bg': '#343130', '--dsw-alias-toast-label': '#eee8d9', '--dsw-alias-link': '#e8a15b',
+    '--dsw-alias-switch-thumb': '#bcb3a7', '--dsw-focus-ring-color': '#e8a15b',
+    '--dsw-alias-scrollbar-bg-l1': '#958c7e55', '--dsw-alias-scrollbar-bg-l2': '#958c7e55',
+    '--dsw-alias-scrollbar-hover-l1': '#bcb3a780', '--dsw-alias-scrollbar-hover-l2': '#bcb3a780',
   };
-  // Both clients share the warm labels above. Desktop portals additionally need
-  // warm surface layers; leave the scene's base colour intact.
-  if (desktop) Object.assign(colors, {
-    '--dsw-alias-bg-layer-1': '#3d3937', '--dsw-alias-bg-layer-2': '#403c3a',
-    '--dsw-alias-bg-layer-3': '#45413f', '--dsw-alias-bg-layer-4': '#4d4946',
-    '--dsw-alias-bg-overlay': '#45413f', '--dsw-alias-bg-module-platform': '#403c3a',
-    '--dsw-alias-settings-card-fill': '#403c3a',
-  });
   return Object.fromEntries(Object.entries(colors).map(([name, value]) => [name, { light: value, dark: value }]));
 }
