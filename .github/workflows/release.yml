@@ -1,0 +1,112 @@
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Stable version already prepared in package.json and CHANGELOG'
+        type: string
+        required: true
+      approved_sha:
+        description: 'Full main-branch commit approved for release'
+        type: string
+        required: true
+      reviewed_client_sha256:
+        description: 'SHA256 of the reviewed Web client; required for publishing'
+        type: string
+        required: false
+      publish:
+        description: 'Publish after user acceptance; false runs a preview only'
+        type: boolean
+        default: false
+        required: true
+
+permissions:
+  contents: read
+
+concurrency:
+  group: dsh-outerwilds-theme-release
+  cancel-in-progress: false
+
+env:
+  RELEASE_VERSION: ${{ inputs.version }}
+  RELEASE_APPROVED_SHA: ${{ inputs.approved_sha }}
+  RELEASE_REVIEWED_CLIENT_SHA256: ${{ inputs.reviewed_client_sha256 }}
+  RELEASE_PUBLISH: ${{ inputs.publish }}
+
+jobs:
+  prepare:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: '24.21.0'
+          package-manager-cache: false
+      - run: npm install --global npm@12.2.0
+      - run: npm run release:validate
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run release:prepare
+      - run: npm run release:preflight
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: release-candidate
+          path: .sandbox/release-automation/
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 30
+      - name: Summarize prepared release
+        run: |
+          node --input-type=module -e '
+            import { readFileSync, appendFileSync } from "node:fs";
+            const m = JSON.parse(readFileSync(".sandbox/release-automation/manifest.json", "utf8"));
+            appendFileSync(process.env.GITHUB_STEP_SUMMARY, `Version: ${m.version}\n\nCommit: ${m.sourceCommit}\n\nClient SHA256: ${m.clientSha256}\n\nPackage SHA256: ${m.sha256}\n\nPublish requested: ${process.env.RELEASE_PUBLISH}\n`);
+          '
+
+  publish:
+    if: inputs.publish && github.ref == 'refs/heads/main'
+    needs: prepare
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: write
+      id-token: write
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: '24.21.0'
+          package-manager-cache: false
+      - run: npm install --global npm@12.2.0
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: release-candidate
+          path: .sandbox/release-automation/
+      - name: Configure release tag author
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+      - name: Publish exact artifact and verify both registries
+        run: npm run release:publish
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Save publication evidence
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: publication-evidence
+          path: .sandbox/release-automation/
+          include-hidden-files: true
+          if-no-files-found: warn
+          retention-days: 30

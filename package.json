@@ -47,6 +47,10 @@
     "typecheck": "tsc --noEmit",
     "test": "node --test tests/*.test.mjs",
     "preview": "node scripts/preview.mjs",
+    "release:validate": "node scripts/release.mjs validate",
+    "release:prepare": "node scripts/release.mjs prepare",
+    "release:preflight": "node scripts/release.mjs preflight",
+    "release:publish": "node scripts/release.mjs publish",
     "prepack": "npm run build"
   },
   "dependencies": {

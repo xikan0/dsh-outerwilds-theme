@@ -13,6 +13,8 @@
 
 当前源码版本是 **0.1.2**，设置入口显示为“星际拓荒”。本版本的代码字号、代码块背景、用户消息气泡背景、设置滑块、内置插件页签、公共面板配色及聊天输入区底部渐变已在 **DSH 0.2.0-rc.2 Web** 上通过用户审查。0.1.1 主题主体此前已在 Web 与 Windows Desktop 上完成个人使用验收；0.1.2 的新改动尚未在 Desktop 上进行实际外观验收。其他系统和 DSH 版本还没有验证。更新内容见 [CHANGELOG](CHANGELOG.md)。
 
+开发与正式发布约定见仓库中的 [发布流程](https://github.com/xikan0/dsh-outerwilds-theme/blob/main/docs/release-workflow.md)。
+
 ## 安装和启用
 
 可以从 npm 按包名安装，也可以从 [Releases](https://github.com/xikan0/dsh-outerwilds-theme/releases) 下载 `.tgz` 安装包。
