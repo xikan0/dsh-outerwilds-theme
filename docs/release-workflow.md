@@ -55,7 +55,7 @@ SHA256 可用 PowerShell 获取：`(Get-FileHash -Algorithm SHA256 -LiteralPath 
 - 如果最新版本已高于该任务的版本，流程会停止，避免降低 `latest`；此时单独补查缺失的 GitHub 结果。
 - 发布失败日志保留在 Actions，助手核对具体步骤并报告；流程不自动给 Issue/PR 发消息，也不自动创建失败 Issue。
 
-## 当前验证范围
+## 第一阶段接入时的验证（2026-10-09）
 
 第一阶段于 2026-10-09 完成接入，发布脚本与工作流提交为 `72492c531d04c9b1c67c6da92a8b4e12eaedf10d`。
 
@@ -65,6 +65,14 @@ SHA256 可用 PowerShell 获取：`(Get-FileHash -Algorithm SHA256 -LiteralPath 
 - [Release 演练](https://github.com/xikan0/dsh-outerwilds-theme/actions/runs/37876781195)通过安装、类型检查、测试、构建、包内容与已验收客户端校验、线上预检查和附件上传；`publish=false`，正式发布任务跳过。
 - 现有 `0.1.2` 已被占用，演练按设计跳过 npm publish dry-run。在隔离副本中用合成的 `0.1.3` 安装包、空 npm 配置执行新版本 dry-run，返回成功；随后匿名查询确认 npm `latest` 仍为 `0.1.2`，`0.1.3` 返回 404。
 
-GitHub 上已保存 `release-candidate` 附件，runner 已完成包内容和校验值检查。本地下载该 CI 附件两次均因网络 `unexpected EOF` 中断，未完成下载后的独立复核。正式发布任务中的跨任务附件下载、真实 OIDC 认证、两处发布与发布后下载校验，仍需在下一次真实版本发布时验证。
+当时 GitHub 上已保存 `release-candidate` 附件，runner 已完成包内容和校验值检查。本地下载该 CI 附件两次均因网络 `unexpected EOF` 中断，未完成下载后的独立复核。接入时尚未验证正式任务中的跨任务附件下载、真实 OIDC 认证、两处发布与发布后下载校验；这些项目已在下述 0.1.3 正式发布中通过。
 
 本次接入保留 `0.1.2`，没有重复发布它，也没有为验证认证创建正式新版本。npm Trusted Publisher 账号连接按前述约定在下一次具备发布条件时配置；semantic-release 的版本计算留待第二阶段。
+
+## 首次真实发布验证（2026-10-10）
+
+用户完成 npm Trusted Publisher 配置后，[0.1.3 正式发布](https://github.com/xikan0/dsh-outerwilds-theme/actions/runs/38059386359)成功。npm OIDC 令牌交换返回 HTTP 201，发布自动生成 provenance；未使用仓库长期 npm 发布令牌。
+
+prepare 与 publish 两个任务全部通过，包括 45 项测试、已验收客户端校验、跨任务附件下载、npm 发布与 `latest` 复核、GitHub 标签与 Release 创建以及两端下载校验。本地另外下载 npm 安装包、GitHub 安装包与校验文件，确认同包、同正式提交及两端最新版本均为 0.1.3；`publication-evidence` 附件已成功下载复核。
+
+具体提交、包校验值、安装验证范围与结果见 [0.1.3 发布记录](release-0.1.3.md)。后续版本继续使用上述手动验收与发布流程，semantic-release 尚未接入。
