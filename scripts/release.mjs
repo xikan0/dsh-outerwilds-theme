@@ -202,7 +202,7 @@ async function publish(input) {
   const result = { version: manifest.version, sourceCommit: manifest.sourceCommit, sha256: manifest.sha256, npmSubmitted: decision === 'resume', npmVerified: false, githubVerified: false };
   await saveJson(resultPath, result);
   if (decision === 'publish') {
-    npm(['publish', resolve(input.directory, manifest.filename), '--ignore-scripts', '--access', 'public', '--tag', 'latest', '--registry', REGISTRY], { capture: false });
+    npm(['publish', resolve(input.directory, manifest.filename), '--ignore-scripts', '--access', 'public', '--tag', 'latest', '--registry', REGISTRY, '--loglevel', 'verbose'], { capture: false });
     result.npmSubmitted = true;
     await saveJson(resultPath, result);
   } else console.log('npm already contains this exact package; completing remaining steps.');
