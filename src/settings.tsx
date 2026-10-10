@@ -54,8 +54,8 @@ export function SettingsPanel({ controller }: { controller: AppearanceController
   const state = useSyncExternalStore(controller.subscribe, controller.getSnapshot);
   const { prefs, form } = state;
   const disabled = !form.writable;
-  function choices<K extends 'stars' | 'motion' | 'density'>(key: K, title: string, options: [Preferences[K], string][], hint?: string) {
-    return <div className="cf-row"><div className="cf-row-label" id={`cf-${key}-label`}><span className="cf-row-title">{title}</span>{hint && <small>{hint}</small>}</div><div className="cf-segments" role="group" aria-labelledby={`cf-${key}-label`}>{options.map(([value, label]) => <button key={value} disabled={disabled} aria-pressed={prefs[key] === value} onClick={() => void controller.write(key, value)}>{label}</button>)}</div></div>;
+  function choices<K extends 'stars' | 'motion' | 'density' | 'audioAuto'>(key: K, title: string, options: [Preferences[K], string][], hint?: string) {
+    return <div className="cf-row"><div className="cf-row-label" id={`cf-${key}-label`}><span className="cf-row-title">{title}</span>{hint && <small>{hint}</small>}</div><div className="cf-segments" role="group" aria-labelledby={`cf-${key}-label`}>{options.map(([value, label]) => <button key={String(value)} disabled={disabled} aria-pressed={prefs[key] === value} onClick={() => void controller.write(key, value)}>{label}</button>)}</div></div>;
   }
   function range(key: 'brightness' | 'opacity' | 'font', title: string, min: number, max: number, hint?: string, unit: '%' | 'px' = '%') {
     return <div className="cf-row"><label className="cf-row-label" htmlFor={`cf-${key}`}><span className="cf-row-title">{title}</span>{hint && <small>{hint}</small>}</label><RangeControl id={`cf-${key}`} title={title} min={min} max={max} unit={unit} value={key === 'font' ? state.fontSize : prefs[key]} disabled={disabled} onChange={value => { if (key === 'font') controller.fontSize(value); else void controller.write(key, value); }}/></div>;
@@ -76,6 +76,7 @@ export function SettingsPanel({ controller }: { controller: AppearanceController
     {range('opacity', '面板不透明度', 90, 100, '数值越高，输入框和菜单越实')}
     {range('font', '正文字号', 10, 22, '与 DSH 原生字号设置同步', 'px')}
     {choices('density', '布局密度', [['comfortable', '舒适'], ['compact', '紧凑']])}
+    {choices('audioAuto', '音频响应', [[false, '关闭'], [true, '开启']], '开启后显示侧栏模块，并自动监听 DSH 所在 Windows 电脑的播放声音。关闭后隐藏并停止监听；选择自动保存，重启后保留。')}
     <div className="cf-actions">
       <button disabled={disabled || !!state.saving} onClick={() => void controller.reset()}>恢复默认设置</button>
       <button disabled={disabled || !!state.saving} className={prefs.enabled && state.dark ? '' : 'cf-primary'} onClick={() => void (prefs.enabled && state.dark ? controller.write('enabled', false) : controller.enable())}>{prefs.enabled && state.dark ? '关闭主题' : '启用深色主题'}</button>

@@ -1,8 +1,15 @@
 import { build } from 'esbuild';
-import { mkdir, writeFile, readFile } from 'node:fs/promises';
+import { mkdir, writeFile, readFile, copyFile } from 'node:fs/promises';
+import { createHash } from 'node:crypto';
 const { name: packageId } = JSON.parse(await readFile('package.json', 'utf8'));
 const assetLoaders = { '.css': 'text', '.png': 'dataurl', '.ttf': 'dataurl', '.woff2': 'dataurl' };
 await mkdir('lib', { recursive: true });
+const manifest = JSON.parse(await readFile('native/bin/manifest.json', 'utf8'));
+const digest = data => createHash('sha256').update(data).digest('hex');
+if (manifest.protocol !== 1 || digest(await readFile('native/loopback.c')) !== manifest.sourceSha256 || digest(await readFile('native/bin/outerwilds-audio.exe')) !== manifest.binarySha256) throw new Error('Rebuild the native audio component with npm run native:build.');
+await mkdir('lib/native', { recursive: true });
+await copyFile('native/bin/outerwilds-audio.exe', 'lib/native/outerwilds-audio.exe');
+await copyFile('native/bin/manifest.json', 'lib/native/manifest.json');
 await build({ entryPoints: ['src/index.ts'], outfile: 'lib/index.js', bundle: true, platform: 'node', format: 'esm', external: ['@deepseek-ai/schemastery'], sourcemap: true });
 const client = await build({ entryPoints: ['src/client.tsx'], bundle: true, platform: 'browser', format: 'cjs', write: false, external: ['react', 'react/jsx-runtime'], loader: assetLoaders, jsx: 'automatic' });
 await writeFile('lib/client.js', `window.__ModuleLoader__.load({id:${JSON.stringify(packageId)},factory:(require)=>{var module={exports:{}};var exports=module.exports;\n${client.outputFiles[0].text}\nreturn module.exports;}});\n`);

@@ -1,0 +1,9 @@
+{
+  "protocol": 1,
+  "platform": "win32",
+  "arch": "x64",
+  "compiler": "Zig 0.15.2",
+  "sourceSha256": "a5b935073f30268b101f930fc0b4f1cad65890e0036e7d134dc0432bc7364eed",
+  "binarySha256": "e3eb8704cdfbb50ec40544a31b93865988b24ec16848eb5b3cf666b7fd4a084d",
+  "bytes": 32256
+}

@@ -8,7 +8,7 @@ import { PACKAGE, REPOSITORY, stableVersion, compareVersions, validateInput, val
 
 const commit = 'a'.repeat(40);
 const hash = (value, algorithm = 'sha256', encoding = 'hex') => createHash(algorithm).update(value).digest(encoding);
-const files = ['package.json', 'lib/client.js', 'lib/index.js', 'cordis.patch.yml', 'README.md', 'CHANGELOG.md', 'LICENSE'];
+const files = ['package.json', 'lib/client.js', 'lib/index.js', 'lib/native/outerwilds-audio.exe', 'lib/native/manifest.json', 'NATIVE-AUDIO.md', 'cordis.patch.yml', 'README.md', 'CHANGELOG.md', 'LICENSE'];
 const input = { version: '0.1.3', commit };
 
 test('release inputs reject prereleases, command text, branch aliases and incomplete review evidence', () => {
@@ -27,6 +27,7 @@ test('package validation excludes credentials, source and archive traversal', ()
   validateFiles(files);
   for (const extra of ['.npmrc', 'src/client.tsx', '../package.json', 'licenses/secret.txt']) assert.throws(() => validateFiles([...files, extra]), /Unexpected/);
   assert.throws(() => validateFiles(files.slice(1)), /Missing/);
+  assert.throws(() => validateFiles(files.filter(file => file !== 'lib/native/outerwilds-audio.exe')), /Missing/);
   assert.throws(() => validateFiles([...files, 'LICENSE']), /Duplicate/);
 });
 test('release notes select only the intended Chinese acceptance section', () => {

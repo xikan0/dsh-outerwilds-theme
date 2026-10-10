@@ -1,5 +1,6 @@
 import type { ComponentType } from 'react';
 import type { Preferences } from './config';
+import type { AudioRpc } from './audio-wave/native-contract';
 export interface ThemeSnapshot { preference: string; fontSize: number; active: { colorScheme: 'dark' | 'light' }; }
 export interface ThemeService {
   getTheme(): ThemeSnapshot;
@@ -16,12 +17,13 @@ export interface ConfigForm {
 }
 export interface ClientContext {
   theme: ThemeService;
+  connection: { rpc: AudioRpc };
   configForms: { get(entry: string): ConfigForm };
   on(event: 'theme/change', callback: (snapshot: ThemeSnapshot) => void): () => void;
   effect(callback: () => (() => void), label?: string): unknown;
   slots: {
     inject(name: string, callback: () => unknown): unknown;
-    register(options: { name: string; id?: string; order?: number; label?: () => string }, component: ComponentType): () => void;
+    register<P = {}>(options: { name: string; id?: string; order?: number; label?: () => string }, component: ComponentType<P>): () => void;
     entries(name: string): unknown[];
   };
 }

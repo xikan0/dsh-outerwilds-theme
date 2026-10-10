@@ -1,0 +1,95 @@
+@font-face { font-family: "DSH Outer Wilds Jost"; src: url("../assets/fonts/Jost-Variable.ttf") format("truetype"); font-style: normal; font-weight: 100 900; font-display: swap; }
+@font-face { font-family: "DSH Outer Wilds Source Han Sans CN"; src: url("../assets/fonts/SourceHanSansCN-Variable.woff2") format("woff2"); font-style: normal; font-weight: 250 900; font-display: swap; }
+:root { color-scheme: dark; font-family: "Segoe UI", "Microsoft YaHei", sans-serif; color: #e7e4df; background: #1d2023; }
+* { box-sizing: border-box; }
+body { margin: 0; }
+button, input { font: inherit; }
+button { cursor: pointer; border: 1px solid #434747; border-radius: 7px; background: #2d3233; padding: 10px 14px; color: #e7e4df; }
+button:hover:enabled { background: #3a4243; }
+button:focus-visible, input:focus-visible { outline: 2px solid #91dad7; outline-offset: 3px; }
+button:disabled { opacity: .5; cursor: default; }
+.audio-prototype { display: grid; grid-template-columns: 264px minmax(0, 1fr); min-height: 100vh; }
+.prototype-sidebar { display: flex; flex-direction: column; position: sticky; top: 0; height: 100dvh; padding: 26px 16px 16px; background: #272a2d; border-right: 1px solid #3a3e40; }
+.prototype-brand { color: #e5ad70; font-size: 16px; letter-spacing: .08em; padding: 0 12px 22px; }
+.prototype-brand small { display: block; margin-top: 8px; color: #a9aaa9; font-size: 12px; letter-spacing: .02em; }
+.prototype-sidebar nav { display: grid; gap: 8px; }
+.prototype-sidebar nav button { text-align: left; border: 0; background: transparent; }
+.prototype-sidebar nav button[aria-current="page"] { color: #f2bd83; background: #383837; }
+.sidebar-note { margin: 28px 12px; color: #a1a6a7; font-size: 12px; line-height: 1.9; }
+.prototype-footer { margin-top: auto; display: grid; gap: 12px; }
+.audio-module {
+  --audio-cyan: #91dad7;
+  --audio-gold: #efb52f;
+  --audio-cyan-glow: 0 0 1px #d5ffff66, 0 0 4px #91dad799, 0 0 9px #6eccc247;
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  padding: 12px 6px 9px;
+  border: 3px solid transparent;
+  border-radius: 8px;
+  background-color: #0b1320;
+  background-image:
+    radial-gradient(ellipse at 50% 46%, #354d75 0%, #283b61 34%, #172742 68%, #0b1320 100%),
+    linear-gradient(145deg, #7d7367 0%, #504c45 30%, #353431 62%, #61584c 100%);
+  background-origin: padding-box, border-box;
+  background-clip: padding-box, border-box;
+  box-shadow: inset 0 0 0 1px #080d16b3, inset 0 0 14px 4px #05091180, 0 1px 0 #99877040, 0 5px 10px #00000040;
+}
+.audio-module::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  border-radius: 5px;
+  background: radial-gradient(ellipse at 42% -24%, #bddbed26 0%, #bddbed0a 42%, transparent 65%);
+  box-shadow: inset 0 1px 1px #b9d4e214;
+  pointer-events: none;
+}
+.audio-frequency-heading { position: relative; z-index: 1; display: grid; justify-items: center; text-align: center; font-family: "DSH Outer Wilds Jost", "DSH Outer Wilds Source Han Sans CN", sans-serif; font-weight: 700; }
+.audio-frequency-caption { color: var(--audio-cyan); font-size: 13px; line-height: 17px; text-shadow: var(--audio-cyan-glow); }
+.audio-frequency-station { display: flex; justify-content: center; align-items: baseline; gap: 8px; max-width: 100%; font-size: 14px; line-height: 20px; white-space: nowrap; }
+.audio-frequency-name { color: var(--audio-gold); text-shadow: 0 0 1px #ffe1a266, 0 0 4px #efb52f80, 0 0 9px #d8952133; }
+.audio-frequency-bracket { color: var(--audio-cyan); font-size: 14px; text-shadow: var(--audio-cyan-glow); }
+.wave-frame { position: relative; z-index: 1; height: 74px; margin: 0 3px; }
+.wave-endcap { position: absolute; top: 50%; z-index: 1; width: 1px; height: 20px; transform: translate(-50%, -50%); background: var(--audio-cyan); box-shadow: 0 0 2px #91dad7b3, 0 0 6px #78c2d859; pointer-events: none; }
+.wave-endcap-left { left: 0; }
+.wave-endcap-right { left: 100%; }
+.wave-surface { position: absolute; inset: 0; }
+.wave-surface canvas { display: block; filter: drop-shadow(0 0 1.5px #91dad79e) drop-shadow(0 0 5px #61afd947); }
+.settings-position { display: flex; justify-content: space-between; border: 0; text-align: left; background: transparent; padding: 8px 12px; }
+.settings-position span { font-size: 10px; align-self: center; color: #a1a6a7; }
+main { max-width: 1024px; width: 100%; padding: 36px 48px; }
+header { display: flex; justify-content: space-between; gap: 16px; color: #929a9b; font-size: 11px; letter-spacing: .06em; }
+h1 { margin: 54px 0 16px; font-size: 29px; font-weight: 500; }
+h2 { font-size: 14px; font-weight: 500; margin: 0 0 18px; }
+.intro { max-width: 600px; color: #b4bdbe; line-height: 1.9; font-size: 14px; }
+.controls, .readouts { margin-top: 32px; padding: 24px 0; border-top: 1px solid #3b4042; }
+.source-buttons { display: flex; flex-wrap: wrap; gap: 10px; }
+.source-buttons button { font-size: 12px; }
+.source-buttons .primary { background: #385154; border-color: #618584; color: #d2efed; }
+.source-buttons .primary:hover:enabled { background: #416364; }
+.disconnect { color: #cfb19b; }
+.share-help, .test-help, .prototype-note { font-size: 12px; color: #9ea9aa; line-height: 1.9; }
+.share-help { margin: 18px 0 0; max-width: 660px; }
+.connection-message { margin: 20px 0; padding: 12px 14px; background: #242b2d; border-left: 2px solid #6c9d9b; font-size: 12px; line-height: 1.8; }
+.connection-message[data-error="true"] { border-left-color: #da9c7b; color: #efba9c; }
+.sliders { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; max-width: 720px; margin-top: 28px; }
+.sliders label { display: grid; gap: 14px; font-size: 12px; }
+.sliders label span { display: flex; justify-content: space-between; }
+.sliders output { color: #a6d5d0; font-variant-numeric: tabular-nums; }
+input[type="range"] { accent-color: #8bc8c3; width: 100%; margin: 0; cursor: pointer; }
+.test-help { margin-top: 20px; }
+.readouts { margin-top: 4px; }
+dl { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 24px 16px; margin: 0; }
+dt { color: #8e9b9c; font-size: 11px; margin-bottom: 9px; }
+dd { margin: 0; font-size: 13px; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.prototype-note { border-top: 1px solid #3b4042; padding-top: 18px; }
+@media (max-width: 860px) { main { padding: 28px 24px; } dl { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 640px) {
+  .audio-prototype { grid-template-columns: minmax(0, 1fr); }
+  .prototype-sidebar { position: static; height: auto; border-right: 0; border-bottom: 1px solid #3a3e40; padding: 20px 20px 12px; }
+  .prototype-brand { padding: 0 0 16px; }.prototype-sidebar nav { grid-template-columns: 1fr 1fr; }
+  .sidebar-note { margin: 14px 0; }.prototype-footer { margin-top: 12px; }
+  .audio-module { max-width: 300px; width: 100%; }.settings-position { max-width: 300px; }
+  h1 { margin-top: 32px; font-size: 24px; }.sliders { grid-template-columns: 1fr; }
+}

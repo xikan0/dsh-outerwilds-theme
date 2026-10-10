@@ -11,7 +11,7 @@
 - 侧边栏采用暖橙导航、米白选中反馈、细虚线分组和更接近游戏菜单的粗体字样，保留 DSH 的紧凑布局。
 - 英文使用 Jost，中文使用思源黑体，字体随插件提供，无需在线加载。来源见 [字体说明](FONTS.md)。
 
-当前源码版本是 **0.1.2**，设置入口显示为“星际拓荒”。本版本的代码字号、代码块背景、用户消息气泡背景、设置滑块、内置插件页签、公共面板配色及聊天输入区底部渐变已在 **DSH 0.2.0-rc.2 Web** 上通过用户审查。0.1.1 主题主体此前已在 Web 与 Windows Desktop 上完成个人使用验收；0.1.2 的新改动尚未在 Desktop 上进行实际外观验收。其他系统和 DSH 版本还没有验证。更新内容见 [CHANGELOG](CHANGELOG.md)。
+当前源码版本是 **0.1.3**，设置入口显示为“星际拓荒”。本版本增加侧栏音频显示屏和随插件提供的 Windows x64 系统音频组件。用户已在本地 Web 与 Windows Desktop 测试迭代中确认波形、显示屏样式和设置控制方式，并于 2026-10-10 同意完成开发与正式发布。设备切换等情况仍需按实际使用环境验证；其他系统和 DSH 版本还没有验证。更新内容见 [CHANGELOG](CHANGELOG.md)。
 
 开发与正式发布约定见仓库中的 [发布流程](https://github.com/xikan0/dsh-outerwilds-theme/blob/main/docs/release-workflow.md)。
 
@@ -24,22 +24,22 @@
 先安装 DSH，并确保终端能运行 `dsh`。在终端运行：
 
 ```powershell
-dsh plugin --profile web add dsh-outerwilds-theme@0.1.2
+dsh plugin --profile web add dsh-outerwilds-theme@0.1.3
 dsh web
 ```
 
-如果使用本地安装包，把命令中的包名替换为实际文件路径，例如 `./dsh-outerwilds-theme-0.1.2.tgz`。如果 Web 已经运行，安装后需要重启。
+如果使用本地安装包，把命令中的包名替换为实际文件路径，例如 `./dsh-outerwilds-theme-0.1.3.tgz`。如果 Web 已经运行，安装后需要重启。
 
 ### Harness Desktop
 
-如果你的版本提供插件管理入口，在侧栏打开 **插件 → 添加插件**，填入 `dsh-outerwilds-theme@0.1.2`，注册表选择官方 npm。使用本地安装包时填入完整路径，例如 `C:/Downloads/dsh-outerwilds-theme-0.1.2.tgz`。安装并启用插件后，完全退出应用（包括托盘）并重新打开。
+如果你的版本提供插件管理入口，在侧栏打开 **插件 → 添加插件**，填入 `dsh-outerwilds-theme@0.1.3`，注册表选择官方 npm。使用本地安装包时填入完整路径，例如 `C:/Downloads/dsh-outerwilds-theme-0.1.3.tgz`。安装并启用插件后，完全退出应用（包括托盘）并重新打开。
 
 桌面版和 Web 的插件安装位置不同。命令安装请参考 [DSH 官方桌面端说明](https://github.com/deepseek-ai/deepseek-harness/blob/master/apps/desktop/README.zh.md#bundled-command-runtime)，使用桌面版随附的命令；旧版本可能不支持该方式，不要用 npm 版 `dsh` 修改桌面端的插件目录。
 
 如果使用桌面版随附的 `dsh` 命令，先完全退出 Desktop，再运行：
 
 ```powershell
-dsh plugin --profile desktop add dsh-outerwilds-theme@0.1.2
+dsh plugin --profile desktop add dsh-outerwilds-theme@0.1.3
 ```
 
 安装后重新打开 Desktop。
@@ -62,6 +62,11 @@ dsh plugin --profile desktop add dsh-outerwilds-theme@0.1.2
 | 面板不透明度 | 调整输入框和菜单的透明程度，默认 96% |
 | 正文字号 | 与 DSH 原生字号同步 |
 | 布局密度 | 舒适或紧凑 |
+| 音频响应 | 默认关闭并隐藏侧栏模块；开启后显示设置按钮上方的显示屏，自动监听系统声音，首页和聊天中均保留。选择自动保存，重启后保留 |
+
+音频响应保持增益 0.7、收束 250 ms、高度 100%。进入 **设置 → 星际拓荒 → 音频响应 → 开启** 后，Windows x64 自动读取 DSH 所在电脑的播放声音，无需选择共享页面。侧栏显示屏只展示频谱，不提供点击或键盘开关；开启和关闭统一在设置中完成。关闭音频响应会隐藏模块并断开声音来源。原生采集组件已经包含在插件内，不需要另外安装程序。旧版已经保存的自动监听选择会继续生效。
+
+非 Windows x64 主机开启模块后会显示不支持自动监听的提示，模块不会弹出共享请求。远程浏览器使用自动模式时，响应的是运行 DSH 那台电脑的声音。组件和生命周期细节见 [Windows 音频说明](NATIVE-AUDIO.md)。
 
 设置修改后会立即预览。“恢复主题默认”会重置主题参数，保留启用状态和正文字号。
 

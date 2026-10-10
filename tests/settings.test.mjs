@@ -75,6 +75,22 @@ afterEach(async () => {
 });
 after(() => dom.window.close());
 
+test('the single audio response choice defaults off and saves enable and disable', async () => {
+  const { form } = await mount();
+  assert.equal(document.querySelector('#cf-audioVisible-label'), null);
+  const label = document.querySelector('#cf-audioAuto-label');
+  assert.equal(label.querySelector('.cf-row-title').textContent, '音频响应');
+  const buttons = label.parentElement.querySelectorAll('button');
+  assert.equal(buttons[0].textContent, '关闭');
+  assert.equal(buttons[0].getAttribute('aria-pressed'), 'true');
+  await act(async () => buttons[1].click());
+  assert.equal(form.getSnapshot().value.audioAuto, true);
+  assert.equal(buttons[1].getAttribute('aria-pressed'), 'true');
+  assert.match(document.querySelector('.cf-status').textContent, /已保存/);
+  await act(async () => buttons[0].click());
+  assert.equal(form.getSnapshot().value.audioAuto, false);
+});
+
 test('settings arrows adjust all three sliders by one unit and keep the displays in sync', async () => {
   const { form, theme } = await mount();
   await act(async () => stepButton('增大背景亮度').click());
