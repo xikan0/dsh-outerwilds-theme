@@ -14,7 +14,7 @@ semantic-release 根据提交信息计算版本，调用插件发布 npm 包与 
 - 没有 `.github/workflows` 和 semantic-release 配置。
 - 现有正式标签为 `0.1.0`、`0.1.1`、`0.1.2`，还保留历史标签 `v0.2.11`。
 - 最近提交为普通描述句，尚未使用默认分析器识别的 `fix:`、`feat:` 等格式。
-- `package.json`、锁文件、README、中文 CHANGELOG 和 Web 迭代记录由本地收尾流程维护。
+- `package.json`、锁文件、中文 CHANGELOG 和 Web 迭代记录由本地收尾流程维护。README 保留长期有效的介绍，仅在项目介绍、使用方式或代表性外观变化时调整。
 - `prepack` 调用构建；客户端构建使用包名，不嵌入包版本。制定方案时 Windows 本地检查已完成，Linux CI 尚未验证；第一阶段接入后已通过 Linux CI 演练。
 - 0.1.2 已完成人工发布与线上包校验；本方案用于后续版本。
 
@@ -39,7 +39,7 @@ semantic-release 根据提交信息计算版本，调用插件发布 npm 包与 
 
 - 以现有 `0.1.2` 为版本基线，配置 `branches: ['main']` 与 `tagFormat: '${version}'`。默认格式带 `v`，需要显式调整以识别现有正式标签，避免将历史 `v0.2.11` 用作基线。参见[标签与已有版本配置](https://semantic-release.org/usage/configuration/#existing-version-tags)。
 - 从下一轮开发开始使用提交约定：`fix:` / `perf:` 升补丁版本，`feat:` 升次版本，破坏性变更升主版本，纯文档与日常维护默认不触发发布。提交正文可继续使用中文，不改写历史提交。自动版本意味着新功能不一定沿用 `0.1.x`；默认规则下，`0.1.2` 之后的新功能会生成 `0.2.0`。参见[项目说明](https://github.com/semantic-release/semantic-release#commit-message-format)。
-- 先预览计算出的正式版本，在本地完成 `package.json`、锁文件、README 与中文说明收尾；CI 核对预览版本与收尾版本一致。默认 semantic-release 不会将包版本写回 Git 仓库，本方案保留本地元数据收尾，避免引入发布机器人回写分支。参见[版本维护说明](https://semantic-release.org/support/faq/#why-is-the-packagejsons-version-not-updated-in-my-repository)。
+- 先预览计算出的正式版本，在本地完成 `package.json`、锁文件与中文更新说明收尾；README 按实际需要维护，不例行更新版本号。CI 核对预览版本与收尾版本一致。默认 semantic-release 不会将包版本写回 Git 仓库，本方案保留本地元数据收尾，避免引入发布机器人回写分支。参见[版本维护说明](https://semantic-release.org/support/faq/#why-is-the-packagejsons-version-not-updated-in-my-repository)。
 - 本地 Web beta 继续使用独立迭代版本，不把每次视觉优化都发布到 npm。初期继续在验收后手动触发；若以后改成合并自动发布，应让正式分支只接收已验收的改动。手动触发是针对本项目视觉验收节奏的选择，官方主要推荐持续交付。
 - 保留人工精修的中文更新说明和 Web/Desktop 验收范围；自动提交摘要作为补充，不代替实际验收记录。
 - 保留“一份安装包用于两处发布”。核对的 [npm 插件源码](https://github.com/semantic-release/npm/blob/master/lib/publish.js)默认发布目录，而不是直接复用 `tarballDir` 中的包；本项目可用 npm 插件仅更新版本并打包，再通过 [exec 插件](https://github.com/semantic-release/exec)调用脚本发布指定 `.tgz`，最后让 GitHub 插件上传该文件。

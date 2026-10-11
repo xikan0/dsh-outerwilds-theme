@@ -6,6 +6,7 @@ import { SettingsPanel } from './settings';
 import styles from './styles.css';
 import campfireArt from './assets/campfire-web-stars.png';
 import { fontFaces } from './fonts';
+import { brandIconVariables } from './brand-icons';
 import { createSidebarAudio } from './audio-wave/sidebar-session';
 import { AudioSidebar } from './audio-wave/sidebar';
 import audioStyles from './audio-wave/sidebar.css';
@@ -17,7 +18,7 @@ export function apply(ctx: ClientContext) {
   const audio = createSidebarAudio(controller, new HostAudioInput(ctx.connection.rpc));
   ctx.effect(() => {
     const style = document.createElement('style'); style.dataset.plugin = PACKAGE_ID;
-    style.textContent = `${fontFaces}\n${styles}\n${audioStyles}\nbody[data-dsh-campfire] { --cf-view-art: url("${campfireArt}"); }`;
+    style.textContent = `${fontFaces}\n${styles}\n${audioStyles}\n${brandIconVariables}\nbody[data-dsh-campfire] { --cf-view-art: url("${campfireArt}"); }`;
     document.head.appendChild(style);
     const visual = createVisualRuntime(ctx.theme, ready => controller.adaptation(ready));
     controller.attach(visual);

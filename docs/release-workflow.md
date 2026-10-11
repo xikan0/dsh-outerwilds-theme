@@ -5,7 +5,7 @@ GitHub Actions 第一阶段发布流程于 2026-10-09 接入。继续由用户�
 ## 开发与收尾
 
 1. 本地 beta 安装、`--no-open` 重启与用户审查继续遵守 `AGENTS.md`。
-2. 正式收尾时统一 `package.json` 和 `package-lock.json` 的稳定版本，并更新 README 和 CHANGELOG。
+2. 正式收尾时统一 `package.json` 和 `package-lock.json` 的稳定版本，并更新 CHANGELOG。README 保留长期有效的介绍与不带版本号的安装、更新示例，仅在介绍、使用方式或代表性外观变化时调整。
 3. CHANGELOG 必须有该版本的 `## x.y.z` 小节及“验收”说明，明确 Web/Desktop 的实际范围。
 4. 保存并推送正式收尾提交，记录完整 SHA 和已验收 Web 客户端的 SHA256。发布任务只允许该次 `main` 运行的提交。
 

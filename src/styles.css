@@ -57,7 +57,7 @@ body[data-dsh-campfire] [data-cf-conversation][data-phase='active'] { background
 /* The host fades the composer seat to a solid base after 36px. Retain only
    a light reading shade over the sky, independently of the input card fill. */
 body[data-dsh-campfire] [data-cf-conversation][data-phase='active'] [data-composer-seat] {
-  background: linear-gradient(180deg, rgba(52, 49, 48, 0) 0px, rgba(52, 49, 48, .08) 36px, rgba(52, 49, 48, .16) 100%) !important;
+  background: linear-gradient(180deg, rgba(44, 41, 39, 0) 0px, rgba(44, 41, 39, .08) 36px, rgba(44, 41, 39, .16) 100%) !important;
 }
 body[data-dsh-campfire] { --dsw-focus-ring-color: #e8a15b; --dsw-radius-panel: 20px; }
 /* Trajectory and Context keep their own reading surfaces over the shared sky.
@@ -126,10 +126,102 @@ body[data-dsh-campfire] [data-slot='main'] .lc-ov-page::before {
   background-size: cover;
   background-repeat: no-repeat;
 }
-/* Keep DSH's native swimming whale; recolor only its original SVG. */
-body[data-dsh-campfire] [data-slot='conversation.hero.brand.mark'] svg { color: #e8a15b; }
-/* The composer uses info-button tokens, not the primary-button tokens. */
-body[data-dsh-campfire] [data-composer-card] :is(button[aria-label='发送消息'], button[aria-label='排队发送'], button[aria-label='插话发送'], button[aria-label='Send message']) { color: #101c23; }
+/* Keep the host mark and action SVGs intact so disabling the theme restores them. */
+body[data-dsh-campfire] [data-slot='conversation.hero.brand.mark'] {
+  /* The host outlet anchor has inline display:contents. Give only this mark a box. */
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 56px;
+  height: 44px;
+  color: #e8a15b;
+  font-size: 0;
+}
+body[data-dsh-campfire] [data-slot='conversation.hero.brand.mark'] svg { display: none; }
+body[data-dsh-campfire] [data-slot='conversation.hero.brand.mark']::before {
+  content: '';
+  display: block;
+  width: 100%;
+  height: 100%;
+  background-color: currentColor;
+  -webkit-mask: var(--cf-eye-icon) center / contain no-repeat;
+  mask: var(--cf-eye-icon) center / contain no-repeat;
+  pointer-events: none;
+}
+@media (max-width: 480px) {
+  body[data-dsh-campfire] [data-slot='conversation.hero.brand.mark'] { width: 44px; height: 35px; }
+}
+/* The composer keeps the user's opacity and the host's editor/attachment layout. */
+body[data-dsh-campfire] [data-composer-card] {
+  --dsw-radius-panel: 12px;
+  --dsw-elevation-stroke-color: transparent;
+  border: 1px solid #e8a15b30;
+  border-radius: 12px;
+  background: var(--dsw-specific-input-major) !important;
+  box-shadow: 0 4px 16px #0002;
+}
+body[data-dsh-campfire] [data-composer-card]:focus-within {
+  border-color: #e8a15b70;
+  box-shadow: 0 4px 16px #0002, 0 0 0 1px #e8a15b0d;
+}
+/* The last direct child is the host toolbar; never match attachment or approval cards. */
+body[data-dsh-campfire] [data-composer-card] > div:last-child:has(button[aria-label]) {
+  align-items: center;
+  column-gap: 10px;
+  row-gap: 8px;
+  padding: 2px 12px 8px;
+}
+body[data-dsh-campfire] [data-composer-card] > div:last-child:has(button[aria-label]) > div {
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+body[data-dsh-campfire] [data-composer-card] [data-composer-input] {
+  padding-inline-start: 16px;
+}
+body[data-dsh-campfire] [data-composer-card] [data-composer-placeholder] {
+  inset-inline-start: 16px;
+}
+body[data-dsh-campfire] [data-composer-card] :is([data-slot='conversation.input.permission'], [data-slot='conversation.input.model']) button {
+  min-height: 28px;
+  display: inline-flex;
+  align-items: center;
+}
+@media (max-width: 480px) {
+  body[data-dsh-campfire] [data-composer-card] > div:last-child:has(button[aria-label]) { column-gap: 8px; padding-inline: 10px; }
+  body[data-dsh-campfire] [data-composer-card] > div:last-child:has(button[aria-label]) > div { gap: 8px; }
+}
+/* Keep the native send hitbox; only the planet glyph carries the theme colour. */
+body[data-dsh-campfire] [data-composer-card] :is(button[aria-label='发送消息'], button[aria-label='排队发送'], button[aria-label='插话发送'], button[aria-label='Send message'], button[aria-label='Queue message'], button[aria-label='Steer message']) {
+  position: relative;
+  color: #e8a15b !important;
+  /* Empty input still disables sending, but the planet stays equally bright. */
+  opacity: 1 !important;
+  background: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+  transform: none;
+}
+body[data-dsh-campfire] [data-composer-card] :is(button[aria-label='发送消息'], button[aria-label='排队发送'], button[aria-label='插话发送'], button[aria-label='Send message'], button[aria-label='Queue message'], button[aria-label='Steer message']):is(:hover, :focus-visible):not(:disabled) {
+  color: #ffd0a0 !important;
+}
+body[data-dsh-campfire] [data-composer-card] :is(button[aria-label='发送消息'], button[aria-label='排队发送'], button[aria-label='插话发送'], button[aria-label='Send message'], button[aria-label='Queue message'], button[aria-label='Steer message']) > svg {
+  visibility: hidden;
+}
+body[data-dsh-campfire] [data-composer-card] :is(button[aria-label='发送消息'], button[aria-label='排队发送'], button[aria-label='插话发送'], button[aria-label='Send message'], button[aria-label='Queue message'], button[aria-label='Steer message'])::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: calc(50% - 2px);
+  width: 32px;
+  height: 32px;
+  transform: translate(-50%, -50%);
+  background-color: currentColor;
+  -webkit-mask: var(--cf-giants-deep-icon) center / contain no-repeat;
+  mask: var(--cf-giants-deep-icon) center / contain no-repeat;
+  pointer-events: none;
+}
 body[data-dsh-campfire] :is([data-slot='conversation.input.permission'], [data-slot='conversation.input.model']) button,
 body[data-dsh-campfire] [data-slot='settings.launcher'] button[aria-label='设置'] { color: #e0ba88; }
 body[data-dsh-campfire] :is([data-slot='conversation.input.permission'], [data-slot='conversation.input.model']) button:hover:not(:disabled),
@@ -343,12 +435,12 @@ body[data-dsh-campfire] :is(select, option, optgroup) {
    this independent of CSS-module hashes and third-party skin annotations.
    The host still owns row heights, truncation, scrolling and the collapsed rail. */
 body[data-dsh-campfire] [data-slot='sidebar'] > div {
-  --cf-nav-orange: #ed9454;
+  --cf-nav-orange: #e8a15b;
   --cf-nav-cream: #f6d9bf;
-  --cf-nav-muted: #a69e93;
-  --cf-nav-line: #ed945438;
-  --cf-nav-hover: #403c3a;
-  --cf-nav-active: #45413f;
+  --cf-nav-muted: #bcb3a7;
+  --cf-nav-line: #e8a15b1a;
+  --cf-nav-hover: #34302d;
+  --cf-nav-active: #e8a15b14;
   --dsw-alias-label-primary: #d9cbb9;
   --dsw-alias-label-secondary: var(--cf-nav-muted);
   --dsw-alias-label-tertiary: #958d82;
@@ -360,10 +452,10 @@ body[data-dsh-campfire] [data-slot='sidebar'] > div {
   --dsw-radius-sm: 3px;
   --dsh-scrollbar-thumb: #ed94542b;
   --dsh-scrollbar-thumb-hover: #ed945461;
-  background-color: #343130 !important;
+  background-color: #2c2927 !important;
   color: var(--dsw-alias-label-primary);
   font-family: var(--cf-font-family);
-  border-inline-end: 1px solid #ed94542b;
+  border-inline-end: 1px solid #e8a15b1a;
 }
 body[data-dsh-campfire] [data-slot='sidebar'] :is(button, input) { font-family: inherit; }
 body[data-dsh-campfire] [data-slot='sidebar.brand.mark'] { color: var(--cf-nav-cream); }
@@ -371,11 +463,11 @@ body[data-dsh-campfire] [data-slot='sidebar.brand.mark'] { color: var(--cf-nav-c
 body[data-dsh-campfire] [data-slot='sidebar'] > div > button {
   color: var(--cf-nav-orange);
   background: transparent;
-  border: 1px solid #ed9454a6;
-  border-radius: 4px;
+  border: 1px solid #e8a15b66;
+  border-radius: 6px;
   font-size: 14px;
-  font-weight: 700;
-  letter-spacing: .06em;
+  font-weight: 600;
+  letter-spacing: .03em;
   box-shadow: none;
 }
 body[data-dsh-campfire] [data-slot='sidebar'] > div > button:is(:hover, :focus-visible) {
@@ -386,26 +478,32 @@ body[data-dsh-campfire] [data-slot='sidebar'] > div > button:is(:hover, :focus-v
 body[data-dsh-campfire] [data-slot='sidebar'] > div > nav {
   padding-bottom: 12px;
   margin-bottom: 12px;
-  border-bottom: 1px dotted var(--cf-nav-line);
+  border-bottom: 1px solid var(--cf-nav-line);
 }
 body[data-dsh-campfire] [data-slot='sidebar'] > div > nav button {
   position: relative;
-  color: var(--cf-nav-orange);
+  color: var(--cf-nav-muted);
   font-size: 14px;
-  font-weight: 700;
-  letter-spacing: .035em;
-  border-radius: 3px;
+  font-weight: 500;
+  letter-spacing: .015em;
+  border-radius: 6px;
+}
+body[data-dsh-campfire] [data-slot='sidebar'] > div > nav button > span:first-child {
+  color: var(--cf-nav-orange);
+  width: 22px;
+  flex: none;
+  justify-content: center;
 }
 body[data-dsh-campfire] [data-slot='sidebar'] > div > nav button:is(:hover, :focus-visible, [aria-current='page']) {
   color: var(--cf-nav-cream);
   background: var(--cf-nav-hover);
 }
 body[data-dsh-campfire] [data-slot='sidebar'] > div > nav button[aria-current='page'] {
-  background-color: var(--cf-nav-active);
+  background-color: var(--cf-nav-active) !important;
   box-shadow: inset 2px 0 var(--cf-nav-orange);
 }
 /* A small menu chevron appears only in wide navigation; never covers rail icons. */
-body[data-dsh-campfire] [data-slot='sidebar'] > div > nav button:has(> span + span) { padding-inline-end: 22px; }
+body[data-dsh-campfire] [data-slot='sidebar'] > div > nav button:has(> span + span) { gap: 10px; padding-inline: 10px 24px; }
 body[data-dsh-campfire] [data-slot='sidebar'] > div > nav button:has(> span + span)::after {
   content: '';
   position: absolute;
@@ -420,17 +518,20 @@ body[data-dsh-campfire] [data-slot='sidebar'] > div > nav button:has(> span + sp
 }
 body[data-dsh-campfire] [data-slot='sidebar'] > div > nav button:is(:hover, :focus-visible, [aria-current='page'])::after { opacity: 1; }
 body[data-dsh-campfire] [data-slot='sidebar.workspaces'] > div > div:first-child > span {
-  color: var(--cf-nav-orange);
+  color: var(--cf-nav-cream);
   font-size: 12px;
-  font-weight: 700;
-  letter-spacing: .08em;
+  font-weight: 600;
+  letter-spacing: .04em;
+}
+body[data-dsh-campfire] [data-slot='sidebar.workspaces'] > div > div:first-child {
+  margin-bottom: 6px;
 }
 body[data-dsh-campfire] [data-slot='sidebar'] [role='treeitem'] {
-  border-radius: 3px;
+  border-radius: 6px;
   letter-spacing: .005em;
   font-weight: 400;
 }
-body[data-dsh-campfire] [data-slot='sidebar'] [role='treeitem'][aria-expanded] { color: #d9cbb9; font-weight: 500; }
+body[data-dsh-campfire] [data-slot='sidebar'] [role='treeitem'][aria-expanded] { color: #eee8d9; font-weight: 600; }
 body[data-dsh-campfire] [data-slot='sidebar'] [role='treeitem']:hover { background-color: var(--cf-nav-hover); }
 body[data-dsh-campfire] [data-slot='sidebar'] [role='treeitem'][aria-selected='true'] {
   color: var(--cf-nav-cream);
@@ -439,7 +540,7 @@ body[data-dsh-campfire] [data-slot='sidebar'] [role='treeitem'][aria-selected='t
 }
 body[data-dsh-campfire] [data-slot='sidebar'] > div > div:has(> div > [data-slot='sidebar.settings']) {
   padding-top: 8px;
-  border-top: 1px dotted var(--cf-nav-line);
+  border-top: 1px solid var(--cf-nav-line);
 }
 body[data-dsh-campfire] [data-slot='sidebar'] [data-slot='settings.launcher'] button {
   color: var(--cf-nav-orange);

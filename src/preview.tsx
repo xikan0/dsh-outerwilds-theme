@@ -7,7 +7,8 @@ import { normalize, DISPLAY_NAME } from './config';
 import type { ConfigForm, FormSnapshot, ThemeService, ThemeSnapshot } from './contracts';
 import styles from './styles.css';
 import { fontFaces } from './fonts';
-const style = document.createElement('style'); style.textContent = `${fontFaces}\n${styles}`; document.head.appendChild(style);
+import { brandIconVariables } from './brand-icons';
+const style = document.createElement('style'); style.textContent = `${fontFaces}\n${styles}\n${brandIconVariables}`; document.head.appendChild(style);
 const formListeners = new Set<() => void>(), themeListeners = new Set<() => void>();
 let snapshot: FormSnapshot = { status: 'ready', writable: true, mode: 'host', value: normalize(JSON.parse(localStorage.getItem('outerwilds-theme-preview') || '{"enabled":true}')) };
 const form: ConfigForm = {
@@ -59,8 +60,8 @@ function Preview() {
     </div></div></aside>
     <div data-slot="main.conversation"><main data-phase={chat ? 'active' : 'hero'} className="preview-conversation">
       <header className="preview-header"><span>{session || panel || ''}</span><small>外观预览</small></header>
-      {chat ? <div data-conversation-content className="preview-transcript"><div className="preview-user">帮我搭建一个主题插件。</div><div className="preview-reply"><p>先从主题配色、背景场景和设置面板开始。</p><pre><code>{`const campfire = {\n  background: '#071017',\n  accent: '#e8a15b',\n  motion: 'gentle'\n};`}</code></pre><p>场景会根据可用空间，调整树影和篝火的位置。</p></div></div> : <div className="preview-hero"><div className="preview-hero-symbol">✧</div><h1>今天，想探索什么？</h1><p>从一个问题开始，记录新的发现。</p></div>}
-      <div className="preview-composer" data-composer-card><textarea placeholder="输入消息…"/><button aria-label="发送预览消息" onClick={() => setChat(true)}>↑</button></div>
+      {chat ? <div data-conversation-content className="preview-transcript"><div className="preview-user">帮我搭建一个主题插件。</div><div className="preview-reply"><p>先从主题配色、背景场景和设置面板开始。</p><pre><code>{`const campfire = {\n  background: '#071017',\n  accent: '#e8a15b',\n  motion: 'gentle'\n};`}</code></pre><p>场景会根据可用空间，调整树影和篝火的位置。</p></div></div> : <div className="preview-hero"><div className="preview-hero-symbol" data-slot="conversation.hero.brand.mark" aria-hidden="true">✧</div><h1>今天，想探索什么？</h1><p>从一个问题开始，记录新的发现。</p></div>}
+      <div className="preview-composer" data-composer-card><textarea placeholder="输入消息…"/><button aria-label="发送消息" onClick={() => setChat(true)}><svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path d="M8 2v12M3 7l5-5 5 5" fill="none" stroke="currentColor" strokeWidth="2"/></svg></button></div>
     </main></div>
     <div data-shell-overlay>{settings && <div className="preview-dialog-backdrop"><div className="preview-dialog" role="dialog" aria-label="设置"><nav><strong>设置</strong><button>{DISPLAY_NAME}</button></nav><div className="preview-settings-content"><button className="preview-close" aria-label="关闭设置" onClick={() => setSettings(false)}>×</button><SettingsPanel controller={controller}/></div></div></div>}</div>
   </div></div>;

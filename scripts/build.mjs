@@ -1,8 +1,8 @@
 import { build } from 'esbuild';
 import { mkdir, writeFile, readFile, copyFile } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
+import { assetLoaders } from './asset-loaders.mjs';
 const { name: packageId } = JSON.parse(await readFile('package.json', 'utf8'));
-const assetLoaders = { '.css': 'text', '.png': 'dataurl', '.ttf': 'dataurl', '.woff2': 'dataurl' };
 await mkdir('lib', { recursive: true });
 const manifest = JSON.parse(await readFile('native/bin/manifest.json', 'utf8'));
 const digest = data => createHash('sha256').update(data).digest('hex');

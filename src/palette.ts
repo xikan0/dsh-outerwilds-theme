@@ -1,5 +1,6 @@
 export function palette(opacity: number): Record<string, { light: string; dark: string }> {
   const surface = `rgba(52, 49, 48, ${opacity / 100})`;
+  const composerSurface = `rgba(44, 41, 39, ${opacity / 100})`;
   const colors: Record<string, string> = {
     // Shared panels inherit the same warm surfaces on both clients. The scene
     // owns its background independently, so plugins need no page-name adapter.
@@ -20,8 +21,8 @@ export function palette(opacity: number): Record<string, { light: string; dark: 
     '--dsw-alias-interactive-bg-hover': '#a9a4a033', '--dsw-alias-interactive-bg-active': '#a9a4a04d', '--dsw-alias-interactive-bg-hover-accent': '#e8a15b24',
     '--dsw-alias-state-business-primary': '#e8a15b', '--dsw-alias-state-business-tertiary': '#b97c42',
     '--dsw-alias-markdown-code-block': '#343130', '--dsw-alias-markdown-code-block-banner': '#45413f', '--dsw-alias-markdown-inline-code': '#a9a4a026',
-    '--dsw-specific-input-major': surface, '--dsw-specific-sidebar-fill': '#343130',
-    '--dsw-specific-sidebar-nav-item-active': '#45413f', '--dsw-specific-sidebar-nav-item-active-accent': '#45413f', '--dsw-specific-sidebar-nav-item-hover': '#403c3a',
+    '--dsw-specific-input-major': composerSurface, '--dsw-specific-sidebar-fill': '#2c2927',
+    '--dsw-specific-sidebar-nav-item-active': '#e8a15b14', '--dsw-specific-sidebar-nav-item-active-accent': '#e8a15b14', '--dsw-specific-sidebar-nav-item-hover': '#34302d',
     '--dsw-menu-surface-fill': surface, '--dsw-specific-menu': surface, '--dsw-alias-menu-group-header-fill': '#343130f5', '--dsw-alias-menu-icon': '#d9cbb9',
     // Shared controls can be portalled outside the settings dialog on either client.
     '--dsw-specific-selector': '#403c3a', '--dsw-specific-tip': '#403c3a',
