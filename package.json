@@ -1,6 +1,6 @@
 {
   "name": "dsh-outerwilds-theme",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "以《星际拓荒》为主题的 DSH Web 与 Windows Desktop 外观插件",
   "repository": {
     "type": "git",
@@ -28,7 +28,7 @@
   "license": "SEE LICENSE IN LICENSE",
   "dsh": {
     "engines": {
-      "dsh": "0.2.0-rc.2"
+      "dsh": "0.2.0-rc.2 || 0.2.1-rc.2"
     },
     "bundle": {
       "patch": "./cordis.patch.yml"

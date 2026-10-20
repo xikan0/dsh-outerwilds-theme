@@ -25,25 +25,45 @@ const { createController } = await import(pathToFileURL(resolve('.sandbox/test/s
 const { DEFAULTS } = await import(pathToFileURL(resolve('.sandbox/test/settings-ui/config.js')));
 
 let root, controller;
-async function mount({ writable = true, refuse = false } = {}) {
+async function mount({ writable = true, refuse = false, resetResult, staleFirstWrite = false, modernFonts = false } = {}) {
   const listeners = new Set();
-  let snapshot = { status: 'ready', writable, mode: 'host', value: { ...DEFAULTS } };
+  let snapshot = { status: 'ready', writable, mode: 'host', revision: 0, value: { ...DEFAULTS } };
   const form = {
     getSnapshot: () => snapshot,
     subscribe(fn) { listeners.add(fn); return () => listeners.delete(fn); },
     async set(field, value) {
       if (refuse) return false;
-      snapshot = { ...snapshot, value: { ...snapshot.value, [field]: value } };
+      if (staleFirstWrite) {
+        staleFirstWrite = false;
+        snapshot = { ...snapshot, revision: snapshot.revision + 1 };
+        listeners.forEach(fn => fn());
+        return false;
+      }
+      snapshot = { ...snapshot, revision: snapshot.revision + 1, value: { ...snapshot.value, [field]: value } };
       listeners.forEach(fn => fn());
       return true;
     },
-    async mutate() { return false; },
+    async mutate(ops) {
+      const accepted = await resetResult;
+      if (!accepted) return false;
+      snapshot = { ...snapshot, value: { ...snapshot.value, ...Object.fromEntries(ops.map(op => [op.path[0], op.value])) } };
+      listeners.forEach(fn => fn());
+      return true;
+    },
   };
-  let themeSnapshot = { preference: 'dark', fontSize: 14, active: { colorScheme: 'dark' } };
+  let themeSnapshot = modernFonts
+    ? { preference: 'dark', fontSizes: { text: 16, code: 12, terminal: 13 }, active: { colorScheme: 'dark' } }
+    : { preference: 'dark', fontSize: 14, active: { colorScheme: 'dark' } };
   const theme = {
     getTheme: () => themeSnapshot,
     setTheme() {},
-    setFontSize(px) { themeSnapshot = { ...themeSnapshot, fontSize: px }; controller.themeChanged(); },
+    setFontSize(roleOrSize, size) {
+      if (modernFonts) {
+        assert.equal(roleOrSize, 'text');
+        themeSnapshot = { ...themeSnapshot, fontSizes: { ...themeSnapshot.fontSizes, text: size } };
+      } else themeSnapshot = { ...themeSnapshot, fontSize: roleOrSize };
+      controller.themeChanged();
+    },
     overrideTokens() { return () => {}; },
   };
   controller = createController(form, theme);
@@ -91,6 +111,15 @@ test('the single audio response choice defaults off and saves enable and disable
   assert.equal(form.getSnapshot().value.audioAuto, false);
 });
 
+test('enabling from an already-dark host recovers a refreshed settings revision', async () => {
+  const { form } = await mount({ staleFirstWrite: true });
+  const enableButton = [...document.querySelectorAll('button')].find(button => button.textContent === '启用深色主题');
+  await act(async () => enableButton.click());
+  assert.equal(form.getSnapshot().value.enabled, true);
+  assert.equal(enableButton.textContent, '关闭主题');
+  assert.equal(document.querySelector('[role="alert"]'), null);
+});
+
 test('settings arrows adjust all three sliders by one unit and keep the displays in sync', async () => {
   const { form, theme } = await mount();
   await act(async () => stepButton('增大背景亮度').click());
@@ -102,6 +131,24 @@ test('settings arrows adjust all three sliders by one unit and keep the displays
   await act(async () => stepButton('增大正文字号').click());
   assert.equal(theme.getTheme().fontSize, 15);
   assert.equal(numberField('正文字号').value, '15');
+});
+
+test('role-based font sizes display a number and finite slider progress through edits', async () => {
+  const { theme } = await mount({ modernFonts: true });
+  const slider = document.querySelector('#cf-font');
+  const track = slider.closest('.cf-range-track');
+  assert.equal(numberField('正文字号').value, '16');
+  assert.equal(slider.value, '16');
+  assert.equal(track.style.getPropertyValue('--cf-range-progress'), '50%');
+  await act(async () => stepButton('增大正文字号').click());
+  assert.equal(numberField('正文字号').value, '17');
+  assert.equal(slider.value, '17');
+  await edit(numberField('正文字号'), '18');
+  await key(numberField('正文字号'), 'Enter');
+  assert.equal(numberField('正文字号').value, '18');
+  assert.equal(slider.value, '18');
+  assert.ok(Number.isFinite(Number.parseFloat(track.style.getPropertyValue('--cf-range-progress'))));
+  assert.deepEqual(theme.getTheme().fontSizes, { text: 18, code: 12, terminal: 13 });
 });
 
 test('the original slider input still updates the editable number display', async () => {
@@ -178,4 +225,26 @@ test('a refused numeric save restores the accepted value and reports failure', a
   assert.equal(brightness.value, '35');
   assert.equal(document.querySelector('#cf-brightness').value, '35');
   assert.match(document.querySelector('[role="alert"]').textContent, /保存失败/);
+});
+
+test('reset locks every settings control and unlocks after success or refusal', async () => {
+  for (const accepted of [true, false]) {
+    let finishReset;
+    const resetResult = new Promise(resolve => { finishReset = resolve; });
+    const { form } = await mount({ resetResult });
+    await act(async () => stepButton('增大背景亮度').click());
+    const resetButton = [...document.querySelectorAll('button')].find(button => button.textContent === '恢复默认设置');
+    await act(async () => resetButton.click());
+    assert.equal(document.querySelectorAll('.cf-settings input:not(:disabled), .cf-settings button:not(:disabled)').length, 0);
+    assert.match(document.querySelector('.cf-status').textContent, /正在恢复默认/);
+    await act(async () => finishReset(accepted));
+    assert.equal(numberField('背景亮度').disabled, false);
+    assert.equal(resetButton.disabled, false);
+    assert.equal(form.getSnapshot().value.brightness, accepted ? 35 : 36);
+    assert.match(document.querySelector('.cf-status').textContent, accepted ? /已恢复/ : /恢复失败/);
+    await act(async () => root.unmount());
+    controller.dispose();
+    root = controller = undefined;
+    document.body.replaceChildren();
+  }
 });

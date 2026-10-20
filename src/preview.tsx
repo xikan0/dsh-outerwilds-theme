@@ -21,7 +21,7 @@ let tokenRelease = 0;
 const theme: ThemeService = {
   getTheme: () => themeSnapshot,
   setTheme(id) { themeSnapshot = { ...themeSnapshot, preference: id, active: { colorScheme: id === 'light' ? 'light' : 'dark' } }; themeListeners.forEach(fn => fn()); },
-  setFontSize(px) { themeSnapshot = { ...themeSnapshot, fontSize: px }; document.body.style.setProperty('--dsh-content-font-size', `${px}px`); themeListeners.forEach(fn => fn()); },
+  setFontSize(px: number) { themeSnapshot = { ...themeSnapshot, fontSize: px }; document.body.style.setProperty('--dsh-content-font-size', `${px}px`); themeListeners.forEach(fn => fn()); },
   overrideTokens(_source, tokens) { const own = ++tokenRelease; Object.entries(tokens).forEach(([key, value]) => document.body.style.setProperty(key, value.dark)); return () => { if (own === tokenRelease) Object.keys(tokens).forEach(key => document.body.style.removeProperty(key)); }; },
 };
 const controller = createController(form, theme);

@@ -1,14 +1,14 @@
 import type { ComponentType } from 'react';
 import type { Preferences } from './config';
 import type { AudioRpc } from './audio-wave/native-contract';
-export interface ThemeSnapshot { preference: string; fontSize: number; active: { colorScheme: 'dark' | 'light' }; }
+export interface ThemeSnapshot { preference: string; fontSize?: number; fontSizes?: { text: number }; active: { colorScheme: 'dark' | 'light' }; }
 export interface ThemeService {
   getTheme(): ThemeSnapshot;
   setTheme(id: string): void;
-  setFontSize(px: number): void;
+  setFontSize: ((px: number) => void) | ((role: 'text', px: number) => void);
   overrideTokens(source: string, tokens: Record<string, { light: string; dark: string }>): () => void;
 }
-export interface FormSnapshot { status: 'ready' | 'loading' | 'unavailable'; value?: Preferences; writable: boolean; mode: 'host' | 'memory'; }
+export interface FormSnapshot { status: 'ready' | 'loading' | 'unavailable'; value?: Preferences; writable: boolean; mode: 'host' | 'memory'; revision?: number; }
 export interface ConfigForm {
   getSnapshot(): FormSnapshot;
   subscribe(listener: () => void): () => void;

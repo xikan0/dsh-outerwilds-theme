@@ -53,9 +53,9 @@ function RangeControl({ id, title, value, min, max, unit, disabled, onChange }: 
 export function SettingsPanel({ controller }: { controller: AppearanceController }) {
   const state = useSyncExternalStore(controller.subscribe, controller.getSnapshot);
   const { prefs, form } = state;
-  const disabled = !form.writable;
+  const disabled = !form.writable || state.resetting;
   function choices<K extends 'stars' | 'motion' | 'density' | 'audioAuto'>(key: K, title: string, options: [Preferences[K], string][], hint?: string) {
-    return <div className="cf-row"><div className="cf-row-label" id={`cf-${key}-label`}><span className="cf-row-title">{title}</span>{hint && <small>{hint}</small>}</div><div className="cf-segments" role="group" aria-labelledby={`cf-${key}-label`}>{options.map(([value, label]) => <button key={String(value)} disabled={disabled} aria-pressed={prefs[key] === value} onClick={() => void controller.write(key, value)}>{label}</button>)}</div></div>;
+    return <div className="cf-row"><div className="cf-row-label" id={`cf-${key}-label`}><span className="cf-row-title">{title}</span>{hint && <small>{hint}</small>}</div><div className="cf-segments" role="group" aria-labelledby={`cf-${key}-label`}>{options.map(([value, label]) => <button type="button" key={String(value)} disabled={disabled} aria-pressed={prefs[key] === value} onClick={() => void controller.write(key, value)}>{label}</button>)}</div></div>;
   }
   function range(key: 'brightness' | 'opacity' | 'font', title: string, min: number, max: number, hint?: string, unit: '%' | 'px' = '%') {
     return <div className="cf-row"><label className="cf-row-label" htmlFor={`cf-${key}`}><span className="cf-row-title">{title}</span>{hint && <small>{hint}</small>}</label><RangeControl id={`cf-${key}`} title={title} min={min} max={max} unit={unit} value={key === 'font' ? state.fontSize : prefs[key]} disabled={disabled} onChange={value => { if (key === 'font') controller.fontSize(value); else void controller.write(key, value); }}/></div>;
@@ -66,21 +66,33 @@ export function SettingsPanel({ controller }: { controller: AppearanceController
   else if (!form.writable) status = '当前连接不能保存主题设置。请从本机 localhost 地址打开。';
   else if (prefs.enabled && !state.dark) status = '当前为浅色外观，主题暂时停用。切回深色后会自动恢复。';
   else if (prefs.enabled && !state.adapted) status = '配色已启用；当前页面没有可适配的聊天区域，场景暂未显示。';
-  return <section className="cf-settings" aria-label={`${DISPLAY_NAME} 设置`}>
-    <h2>星际拓荒</h2>
-    <p>在星空下，整理今天的探索。</p>
+  const active = prefs.enabled && state.dark;
+  return <section className="cf-settings" data-color-scheme={state.dark ? 'dark' : 'light'} aria-label={`${DISPLAY_NAME} 设置`} aria-busy={state.resetting}>
+    <header className="cf-settings-header">
+      <div><h2>星际拓荒</h2><p>在星空下，整理今天的探索。</p></div>
+      <span className="cf-theme-state" data-active={active}>{active ? '主题已启用' : prefs.enabled ? '等待深色外观' : '主题未启用'}</span>
+    </header>
     <div className="cf-mini"><img src={campfireArt} alt="" aria-hidden="true"/></div>
-    {range('brightness', '背景亮度', 15, 65)}
-    {choices('stars', '星星数量', [['few', '少'], ['standard', '标准'], ['many', '多']])}
-    {choices('motion', '营地动效', [['still', '静止'], ['gentle', '轻微'], ['rich', '增强']], '星空保持静止，仅调整火焰、烟雾与火星')}
-    {range('opacity', '面板不透明度', 90, 100, '数值越高，输入框和菜单越实')}
-    {range('font', '正文字号', 10, 22, '与 DSH 原生字号设置同步', 'px')}
-    {choices('density', '布局密度', [['comfortable', '舒适'], ['compact', '紧凑']])}
-    {choices('audioAuto', '音频响应', [[false, '关闭'], [true, '开启']], '开启后显示侧栏模块，并自动监听 DSH 所在 Windows 电脑的播放声音。关闭后隐藏并停止监听；选择自动保存，重启后保留。')}
+    <section className="cf-settings-group" aria-labelledby="cf-atmosphere-title">
+      <h3 id="cf-atmosphere-title">营地氛围</h3>
+      {range('brightness', '背景亮度', 15, 65)}
+      {choices('stars', '星星数量', [['few', '少'], ['standard', '标准'], ['many', '多']])}
+      {choices('motion', '营地动效', [['still', '静止'], ['gentle', '轻微'], ['rich', '增强']], '星空保持静止，仅调整火焰、烟雾与火星')}
+    </section>
+    <section className="cf-settings-group" aria-labelledby="cf-reading-title">
+      <h3 id="cf-reading-title">阅读与布局</h3>
+      {range('opacity', '面板不透明度', 90, 100, '数值越高，输入框和菜单越实')}
+      {range('font', '正文字号', 10, 22, '与 DSH 原生字号设置同步', 'px')}
+      {choices('density', '布局密度', [['comfortable', '舒适'], ['compact', '紧凑']])}
+    </section>
+    <section className="cf-settings-group" aria-labelledby="cf-audio-title">
+      <h3 id="cf-audio-title">声音响应</h3>
+      {choices('audioAuto', '音频响应', [[false, '关闭'], [true, '开启']], '开启后在侧栏显示波形，响应 DSH 所在 Windows 电脑的播放声音。关闭后停止监听；选择会自动保存。')}
+    </section>
     <div className="cf-actions">
-      <button disabled={disabled || !!state.saving} onClick={() => void controller.reset()}>恢复默认设置</button>
-      <button disabled={disabled || !!state.saving} className={prefs.enabled && state.dark ? '' : 'cf-primary'} onClick={() => void (prefs.enabled && state.dark ? controller.write('enabled', false) : controller.enable())}>{prefs.enabled && state.dark ? '关闭主题' : '启用深色主题'}</button>
-      {prefs.enabled && !state.dark && <button disabled={disabled} onClick={() => void controller.write('enabled', false)}>关闭主题</button>}
+      <button type="button" disabled={disabled || !!state.saving} onClick={() => void controller.reset()}>恢复默认设置</button>
+      <button type="button" disabled={disabled || !!state.saving} className={active ? '' : 'cf-primary'} onClick={() => void (active ? controller.write('enabled', false) : controller.enable())}>{active ? '关闭主题' : '启用深色主题'}</button>
+      {prefs.enabled && !state.dark && <button type="button" disabled={disabled} onClick={() => void controller.write('enabled', false)}>关闭主题</button>}
     </div>
     <div className="cf-status" role={state.error ? 'alert' : 'status'} data-error={state.error}>{status || '设置自动保存。系统减少动态效果时，营地保持静止。'}</div>
   </section>;

@@ -89,11 +89,103 @@ test('concurrent edits preserve the newest draft while earlier writes settle', a
   await queue[1](); await second; assert.equal(controller.getSnapshot().prefs.brightness,55); assert.equal(controller.getSnapshot().saving,0);
   controller.dispose();
 });
+test('save recovery is bounded and stable refusals are not retried', async () => {
+  for (const advances of [false, true]) {
+    const form = mockForm();
+    const originalSnapshot = form.getSnapshot;
+    let revision = 0, attempts = 0;
+    form.getSnapshot = () => ({ ...originalSnapshot(), revision });
+    form.set = async () => { attempts++; if (advances) revision++; return false; };
+    const controller = modules.controller.createController(form, mockTheme());
+    await controller.write('enabled', true);
+    assert.equal(attempts, advances ? 2 : 1);
+    assert.equal(controller.getSnapshot().prefs.enabled, false);
+    assert.equal(controller.getSnapshot().error, true);
+    assert.equal(controller.getSnapshot().saving, 0);
+    controller.dispose();
+  }
+});
+test('recovery cannot retry a setting superseded by a newer edit', async () => {
+  const form = mockForm(), queued = [];
+  const originalSnapshot = form.getSnapshot, originalSet = form.set.bind(form);
+  let revision = 0;
+  form.getSnapshot = () => ({ ...originalSnapshot(), revision });
+  form.set = (key, value) => new Promise(resolve => queued.push(async accepted => {
+    revision++;
+    resolve(accepted ? await originalSet(key, value) : false);
+  }));
+  const controller = modules.controller.createController(form, mockTheme());
+  const earlier = controller.write('brightness', 45);
+  const latest = controller.write('brightness', 55);
+  await queued[0](false);
+  await earlier;
+  assert.equal(queued.length, 2);
+  assert.equal(controller.getSnapshot().prefs.brightness, 55);
+  await queued[1](true);
+  await latest;
+  assert.equal(controller.getSnapshot().prefs.brightness, 55);
+  assert.equal(controller.getSnapshot().saving, 0);
+  assert.equal(controller.getSnapshot().error, false);
+  controller.dispose();
+});
 test('reset preserves enable state and native font settings', async () => {
   const form=mockForm(), theme=mockTheme(); const controller=modules.controller.createController(form,theme);
   await controller.enable(); await controller.write('motion','rich'); controller.fontSize(18); await controller.reset();
   assert.equal(controller.getSnapshot().prefs.enabled,true); assert.equal(controller.getSnapshot().prefs.motion,'gentle'); assert.equal(theme.getTheme().fontSize,18);
   controller.dispose();
+});
+test('role-based host font settings update text without changing code or terminal sizes', async () => {
+  const theme = mockTheme();
+  let snapshot = { preference: 'dark', fontSizes: { text: 16, code: 12, terminal: 13 }, active: { colorScheme: 'dark' } };
+  theme.getTheme = () => snapshot;
+  theme.setFontSize = (role, size) => {
+    assert.equal(role, 'text');
+    snapshot = { ...snapshot, fontSizes: { ...snapshot.fontSizes, [role]: size } };
+  };
+  const controller = modules.controller.createController(mockForm(), theme);
+  assert.equal(controller.getSnapshot().fontSize, 16);
+  controller.fontSize(18);
+  controller.themeChanged();
+  await new Promise(resolve => setImmediate(resolve));
+  assert.equal(controller.getSnapshot().fontSize, 18);
+  assert.deepEqual(snapshot.fontSizes, { text: 18, code: 12, terminal: 13 });
+  controller.dispose();
+});
+test('restoring defaults blocks competing edits until the reset settles', async () => {
+  const form = mockForm(), theme = mockTheme();
+  let finishReset;
+  form.mutate = () => new Promise(resolve => { finishReset = resolve; });
+  const controller = modules.controller.createController(form, theme);
+  const resetting = controller.reset();
+  await controller.write('brightness', 60);
+  await controller.enable();
+  controller.fontSize(20);
+  assert.equal(form.getSnapshot().value.brightness, DEFAULTS.brightness);
+  assert.equal(form.getSnapshot().value.enabled, false);
+  assert.equal(theme.getTheme().fontSize, 14);
+  assert.equal(theme.writes, 0);
+  assert.equal(controller.getSnapshot().saving, 1);
+  finishReset(false);
+  await resetting;
+  assert.equal(controller.getSnapshot().saving, 0);
+  assert.equal(controller.getSnapshot().error, true);
+  await controller.write('brightness', 45);
+  assert.equal(controller.getSnapshot().prefs.brightness, 45);
+  controller.dispose();
+});
+test('a disposed controller cannot restore or save settings', async () => {
+  const form = mockForm(), theme = mockTheme();
+  await form.set('brightness', 60);
+  const controller = modules.controller.createController(form, theme);
+  controller.dispose();
+  await controller.reset();
+  await controller.write('brightness', 40);
+  await controller.enable();
+  controller.fontSize(20);
+  assert.equal(form.getSnapshot().value.brightness, 60);
+  assert.equal(form.getSnapshot().value.enabled, false);
+  assert.equal(theme.getTheme().fontSize, 14);
+  assert.equal(theme.writes, 0);
 });
 test('readonly form cannot claim saved changes', async () => {
   const form=mockForm(false), theme=mockTheme(), controller=modules.controller.createController(form,theme);
