@@ -25,13 +25,15 @@ const { createController } = await import(pathToFileURL(resolve('.sandbox/test/s
 const { DEFAULTS } = await import(pathToFileURL(resolve('.sandbox/test/settings-ui/config.js')));
 
 let root, controller;
-async function mount({ writable = true, refuse = false, resetResult, staleFirstWrite = false, modernFonts = false } = {}) {
+async function mount({ writable = true, refuse = false, resetResult, staleFirstWrite = false, modernFonts = false, missingEntry = false } = {}) {
   const listeners = new Set();
   let snapshot = { status: 'ready', writable, mode: 'host', revision: 0, value: { ...DEFAULTS } };
+  if (missingEntry) snapshot = { ...snapshot, status: 'unavailable', value: undefined };
   const form = {
     getSnapshot: () => snapshot,
     subscribe(fn) { listeners.add(fn); return () => listeners.delete(fn); },
     async set(field, value) {
+      if (missingEntry) return false;
       if (refuse) return false;
       if (staleFirstWrite) {
         staleFirstWrite = false;
@@ -66,7 +68,20 @@ async function mount({ writable = true, refuse = false, resetResult, staleFirstW
     },
     overrideTokens() { return () => {}; },
   };
-  controller = createController(form, theme);
+  const native = {
+    getSnapshot: () => ({ status: 'ready', writable }),
+    async set(field, value) {
+      assert.equal(field, 'preference');
+      assert.equal(value, 'dark');
+      if (missingEntry) {
+        missingEntry = false;
+        snapshot = { ...snapshot, status: 'ready', value: { ...DEFAULTS } };
+        listeners.forEach(fn => fn());
+      }
+      return true;
+    },
+  };
+  controller = createController(form, theme, native);
   const container = document.createElement('div');
   document.body.appendChild(container);
   root = createRoot(container);
@@ -117,6 +132,17 @@ test('enabling from an already-dark host recovers a refreshed settings revision'
   await act(async () => enableButton.click());
   assert.equal(form.getSnapshot().value.enabled, true);
   assert.equal(enableButton.textContent, '关闭主题');
+  assert.equal(document.querySelector('[role="alert"]'), null);
+});
+
+test('the enable button activates an absent Host entry without switching to light', async () => {
+  const { form, theme } = await mount({ missingEntry: true });
+  const enableButton = [...document.querySelectorAll('button')].find(button => button.textContent === '启用深色主题');
+  assert.equal(form.getSnapshot().status, 'unavailable');
+  await act(async () => enableButton.click());
+  assert.equal(form.getSnapshot().value?.enabled, true);
+  assert.equal(enableButton.textContent, '关闭主题');
+  assert.equal(theme.getTheme().preference, 'dark');
   assert.equal(document.querySelector('[role="alert"]'), null);
 });
 

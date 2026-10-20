@@ -2,7 +2,7 @@ import { DEFAULTS, normalize, type Preferences } from './config';
 import type { ConfigForm, FormSnapshot, ThemeService } from './contracts';
 import type { VisualRuntime } from './runtime';
 export interface AppearanceState { prefs: Preferences; form: FormSnapshot; dark: boolean; fontSize: number; saving: number; resetting: boolean; message: string; error: boolean; adapted: boolean; }
-export function createController(form: ConfigForm, theme: ThemeService) {
+export function createController(form: ConfigForm, theme: ThemeService, nativeTheme?: ConfigForm) {
   let disposed = false, themeRefreshQueued = false, visual: VisualRuntime | undefined;
   const listeners = new Set<() => void>();
   const pending = new Map<keyof Preferences, { value: unknown; generation: number }>();
@@ -18,7 +18,7 @@ export function createController(form: ConfigForm, theme: ThemeService) {
     visual?.update(state.prefs); listeners.forEach(fn => fn());
   }
   const unsubscribe = form.subscribe(() => emit());
-  async function write<K extends keyof Preferences>(key: K, value: Preferences[K]) {
+  async function write<K extends keyof Preferences>(key: K, value: Preferences[K], activate = false) {
     if (disposed || state.resetting || !form.getSnapshot().writable) return;
     const revision = form.getSnapshot().revision;
     const own = ++generation;
@@ -26,15 +26,25 @@ export function createController(form: ConfigForm, theme: ThemeService) {
     emit({ saving: state.saving + 1, message: '正在保存…', error: false });
     let accepted = false;
     try {
-      accepted = await form.set(key, value);
-      const refreshed = form.getSnapshot();
-      if (!accepted && !disposed && refreshed.writable && refreshed.status === 'ready' && typeof revision === 'number' && typeof refreshed.revision === 'number' && refreshed.revision > revision && pending.get(key)?.generation === own) {
+      let ready = true;
+      if (activate && nativeTheme) {
+        const native = nativeTheme.getSnapshot();
+        ready = native.status === 'ready' && native.writable && await nativeTheme.set('preference', 'dark');
+      }
+      if (ready && !disposed && form.getSnapshot().writable && pending.get(key)?.generation === own) {
+        if (activate) theme.setTheme('dark');
         accepted = await form.set(key, value);
+        const refreshed = form.getSnapshot();
+        if (!accepted && !disposed && refreshed.writable && refreshed.status === 'ready' && typeof revision === 'number' && typeof refreshed.revision === 'number' && refreshed.revision > revision && pending.get(key)?.generation === own) {
+          accepted = await form.set(key, value);
+        }
       }
     } catch { accepted = false; }
     if (disposed) return;
-    if (pending.get(key)?.generation === own) pending.delete(key);
+    const current = pending.get(key)?.generation === own;
+    if (current) pending.delete(key);
     const saving = Math.max(0, state.saving - 1);
+    if (!current) { emit({ saving, ...(!saving && !state.error ? { message: '已保存' } : {}) }); return; }
     emit({ saving, message: accepted ? (saving ? '正在保存…' : '已保存') : '保存失败，已恢复已保存的设置。', error: !accepted });
   }
   return {
@@ -50,7 +60,7 @@ export function createController(form: ConfigForm, theme: ThemeService) {
       // by a later listener still handling the older theme/change event.
       queueMicrotask(() => { themeRefreshQueued = false; emit(); });
     }, write,
-    async enable() { if (disposed || state.resetting || !form.getSnapshot().writable) return; theme.setTheme('dark'); await write('enabled', true); },
+    async enable() { if (disposed || state.resetting || state.saving || !form.getSnapshot().writable) return; await write('enabled', true, true); },
     fontSize(px: number) {
       if (disposed || state.resetting || !form.getSnapshot().writable) return;
       if (theme.getTheme().fontSizes) (theme.setFontSize as (role: 'text', value: number) => void)('text', px);

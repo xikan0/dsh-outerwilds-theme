@@ -14,7 +14,7 @@ import { HostAudioInput } from './audio-wave/host-input';
 
 export const inject = ['theme', 'slots', 'configForms', 'connection'];
 export function apply(ctx: ClientContext) {
-  const controller = createController(ctx.configForms.get(ENTRY_ID), ctx.theme);
+  const controller = createController(ctx.configForms.get(ENTRY_ID), ctx.theme, ctx.configForms.get('ui-theme'));
   const audio = createSidebarAudio(controller, new HostAudioInput(ctx.connection.rpc));
   ctx.effect(() => {
     const style = document.createElement('style'); style.dataset.plugin = PACKAGE_ID;

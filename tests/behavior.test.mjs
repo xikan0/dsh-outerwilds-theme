@@ -80,6 +80,93 @@ test('controller rolls back refused writes and reports error', async () => {
   assert.equal(controller.getSnapshot().prefs.brightness,35); assert.equal(controller.getSnapshot().error,true); assert.equal(controller.getSnapshot().saving,0);
   controller.dispose(); assert.equal(form.listeners.size,0);
 });
+
+test('activation awaits a native dark save before writing a newly installed Host entry', async () => {
+  const form = mockForm(), theme = mockTheme(), calls = [];
+  const currentSnapshot = form.getSnapshot, accept = form.set.bind(form);
+  let registered = false, finishNative;
+  form.getSnapshot = () => registered ? currentSnapshot() : { status: 'unavailable', writable: true };
+  form.set = async (key, value) => {
+    calls.push(['plugin', key, value]);
+    if (!registered) return false;
+    return accept(key, value);
+  };
+  const native = {
+    getSnapshot: () => ({ status: 'ready', writable: true }),
+    set(key, value) {
+      calls.push(['native', key, value]);
+      return new Promise(resolve => { finishNative = () => { registered = true; resolve(true); }; });
+    },
+  };
+  const controller = modules.controller.createController(form, theme, native);
+  try {
+    const activating = controller.enable();
+    await Promise.resolve();
+    assert.deepEqual(calls, [['native', 'preference', 'dark']]);
+    assert.equal(controller.getSnapshot().saving, 1);
+    await controller.enable();
+    await controller.reset();
+    assert.equal(calls.length, 1);
+    finishNative();
+    await activating;
+    assert.deepEqual(calls, [['native', 'preference', 'dark'], ['plugin', 'enabled', true]]);
+    assert.equal(controller.getSnapshot().prefs.enabled, true);
+    assert.equal(controller.getSnapshot().saving, 0);
+    assert.equal(controller.getSnapshot().error, false);
+    assert.equal(theme.getTheme().preference, 'dark');
+  } finally { controller.dispose(); }
+});
+
+test('activation never enables the plugin when the native dark save is unavailable or refused', async () => {
+  for (const refusal of ['readonly', 'loading', 'rejected', 'throws']) {
+    const form = mockForm(), theme = mockTheme();
+    let nativeWrites = 0, pluginWrites = 0;
+    form.set = async () => { pluginWrites++; return true; };
+    const native = {
+      getSnapshot: () => ({ status: refusal === 'loading' ? 'loading' : 'ready', writable: refusal !== 'readonly' }),
+      async set() { nativeWrites++; if (refusal === 'throws') throw new Error('connection failed'); return false; },
+    };
+    const controller = modules.controller.createController(form, theme, native);
+    try {
+      await controller.enable();
+      assert.equal(nativeWrites, ['readonly', 'loading'].includes(refusal) ? 0 : 1);
+      assert.equal(pluginWrites, 0);
+      assert.equal(theme.writes, 0);
+      assert.equal(controller.getSnapshot().prefs.enabled, false);
+      assert.equal(controller.getSnapshot().saving, 0);
+      assert.equal(controller.getSnapshot().error, true);
+    } finally { controller.dispose(); }
+  }
+});
+
+test('activation cannot outlive disposal, a newer disable or loss of write access', async () => {
+  for (const interruption of ['dispose', 'disable', 'readonly']) {
+    const form = mockForm(), theme = mockTheme(), writes = [];
+    const accept = form.set.bind(form), currentSnapshot = form.getSnapshot;
+    let writable = true, finishNative;
+    form.getSnapshot = () => ({ ...currentSnapshot(), writable });
+    form.set = (key, value) => { writes.push([key, value]); return accept(key, value); };
+    const native = { getSnapshot: () => ({ status: 'ready', writable: true }), set: () => new Promise(resolve => { finishNative = resolve; }) };
+    const controller = modules.controller.createController(form, theme, native);
+    try {
+      const activating = controller.enable();
+      await Promise.resolve();
+      assert.equal(typeof finishNative, 'function');
+      if (interruption === 'dispose') controller.dispose();
+      else if (interruption === 'disable') await controller.write('enabled', false);
+      else writable = false;
+      finishNative(true);
+      await activating;
+      assert.deepEqual(writes, interruption === 'disable' ? [['enabled', false]] : []);
+      assert.equal(theme.writes, 0);
+      assert.equal(currentSnapshot().value.enabled, false);
+      if (interruption !== 'dispose') {
+        assert.equal(controller.getSnapshot().prefs.enabled, false);
+        assert.equal(controller.getSnapshot().saving, 0);
+      }
+    } finally { controller.dispose(); }
+  }
+});
 test('concurrent edits preserve the newest draft while earlier writes settle', async () => {
   const form=mockForm(), queue=[];
   const realSet=form.set.bind(form); form.set=(key,value)=>new Promise(resolve=>queue.push(async()=>resolve(await realSet(key,value))));

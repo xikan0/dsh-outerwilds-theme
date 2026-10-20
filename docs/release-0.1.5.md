@@ -53,3 +53,7 @@
 - `.sandbox/release/0.1.5-publication-39420261085/`：最终发布证据、两端下载包、校验文件与 `independent-verification.json`。
 
 本地证据不随 npm 包发布，GitHub Release 长期保留安装包与校验文件。
+
+## 发布后反馈 · 2026-10-20
+
+用户随后报告深色环境首次启用仍失败，并提供真实响应 `settings/rejected: No configurable plugin entry "ui-outerwilds-theme"`。这与此前验证的版本冲突不同；原有发布与验收记录不证明此入口缺失问题已解决。后续复现、修复与测试范围见 [0.1.6 测试记录](web-iteration-0.1.6.md)，实际复测仍以用户反馈为准。
